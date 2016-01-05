@@ -1,5 +1,5 @@
 
-function [resp, responseKeyHit] = getObserverInput(c1, c2);
+function [resp, responseKeyHit] = getObserverInput(c1, c2); %put in RT
 responseKeyHit=0;
 while responseKeyHit==0
     % check if a key has been pressed

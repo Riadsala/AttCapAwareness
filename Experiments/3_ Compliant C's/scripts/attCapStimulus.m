@@ -1,4 +1,4 @@
-function [I x y] = attCapStimulus(targPos, distPos)
+function [I x y xtarg ytarg xdist ydist] = attCapStimulus(targPos, distPos)
 
 % targPos = position of target = [1,n]
 % distPos = relative position of distracter = [0,n] (set to 0 for no distracter)
@@ -8,10 +8,10 @@ R = 256; % radius for circle presentation
 r = 32; % radius of actual circles
 n = 6; % number of circles
 
-
 I = zeros(N,N);
 
 circle = DrawCircleTemplate(r);
+
 
 % draw
 for i = 1:n
@@ -19,6 +19,10 @@ for i = 1:n
    x(i) = round(R * cos(phi)+N/2);
    y(i) = round(R * sin(phi)+N/2);   
    I((x(i)-r):(x(i)+r),(y(i)-r):(y(i)+r)) = ((i==targPos)+1)*circle;
+   if i == targPos
+    xtarg = x(i);
+    ytarg = y(i);
+   end
 end
 
 % now draw distracter
@@ -26,13 +30,18 @@ if distPos~=0
     phi =  2*targPos*pi/n + 2*(distPos-1)*pi/n + pi/n;
     x(i+1) = round(R * cos(phi)+N/2);
     y(i+1) = round(R * sin(phi)+N/2);
-    I((x(i+1)-r):(x(i+1)+r),(y(i+1)-r):(y(i+1)+r)) = -circle;
-    
+    I((x(i+1)-r):(x(i+1)+r),(y(i+1)-r):(y(i+1)+r)) = -circle; 
+    xdist = x(i+1);
+    ydist = y(i+1);
+else
+    xdist = N+100;
+    ydist = R+100;
 end
 
 phi = 2*targPos*pi/n; 
 % x = round(R * cos(phi)+N/2);
-% y = round(R * sin(phi)+N/2);   
+% y = round(R * sin(phi)+N/2);  
+
 end
 
 function c = DrawCircleTemplate(r)

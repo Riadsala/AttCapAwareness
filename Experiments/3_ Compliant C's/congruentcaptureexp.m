@@ -1,4 +1,4 @@
- function experiment1
+function congruentcaptureexp
 
 
 addpath('scripts/');
@@ -9,7 +9,7 @@ RandStream.setDefaultStream(stream);
 
 iLink.doILink = 1;
 
-nTrialsPerCond = 3 ; % number of trials
+nTrialsPerCond = 2 ; % number of trials
 
 %% parameters
 params.previewTime = 1;
@@ -84,33 +84,33 @@ if iLink.doILink == 1
 end
 
 %% run experiment!
-nBlocks = 6; %changed from 12 to 6 AM
-n= 0;
 
-for block = 1:nBlocks
+blockLength = 50;
+block = 0;
+
+for n = 1:length(trialList)
     
-    % display start of block message
-    Screen('DrawTexture', stimuliScrn, t_blank);
-    DrawFormattedText(stimuliScrn, strcat('Press any key when ready to start block ', int2str(block), '/', int2str(nBlocks)), 'center', 'center');
-    Screen('Flip', stimuliScrn)
-    WaitSecs(0.1);
-    KbWait;
-    
-    
-    if block>1
-        EyelinkDoTrackerSetup(iLink.el);
+    if mod(n-1, blockLength)==0
+        block = block + 1;
+        % display start of block message
+        Screen('DrawTexture', stimuliScrn, t_blank);
+        DrawFormattedText(stimuliScrn, strcat('Press any key when ready to start block ', int2str(block)), 'center', 'center');
+        Screen('Flip', stimuliScrn)
+        WaitSecs(0.1);
+        KbWait;
+        if block>1
+            EyelinkDoTrackerSetup(iLink.el);
+        end
     end
     
-    for t = 1:(nTrialsPerCond*6*12/nBlocks)
-        n = n+1;
-        [preview, stimulus tc dc] = createStimuli(trialList, n, params);
-        t_preview  = Screen('MakeTexture', stimuliScrn, 255*preview);
-        t_stimulus = Screen('MakeTexture', stimuliScrn, 255*stimulus);
-        
-        DoATrial;
-        
-        Screen('Close', [t_preview, t_stimulus]);
-    end
+    [preview, stimulus tc dc] = createStimuli(trialList, n, params);
+    t_preview  = Screen('MakeTexture', stimuliScrn, 255*preview);
+    t_stimulus = Screen('MakeTexture', stimuliScrn, 255*stimulus);
+    
+    DoATrial;
+    
+    Screen('Close', [t_preview, t_stimulus]);
+    
     
 end
 
@@ -149,7 +149,7 @@ sca
         end
         Screen('Flip', stimuliScrn);
         currTime = getsecs(); 
-        timeSecs = KbWait
+        timeSecs = KbWait;
         [keyIsDown,secs,keyCode] = KbCheck;
         responseTime = secs();
         response = getObserverInput('f', 'b');
@@ -168,23 +168,18 @@ sca
             Eyelink('message', strcat('TRIAL_END', int2str(n)));
             
         end
-        %% display response text
-        
-%             response = getObserverInput('f', 'b');
-%             targDiscrim = response==tc;
-%         else
-%             targDiscrim=-1;
-%         end
-
+ 
+        % question was this a good eye movement?
         Screen('DrawTexture', stimuliScrn, t_blank);
         DrawFormattedText(stimuliScrn, 'Was this a good eye movement: yes (y) or no (n)?', 'center', 'center');
         Screen('Flip', stimuliScrn);
-        TrialQuestion = getsecs();
+        currTime = getsecs();
+        timeSecs = KbWait;
         [keyIsDown,secs,keyCode] = KbCheck;
         TrialResponse = secs();
-        WaitSecs(0.05);
+        %WaitSecs(0.05);
         thoughtNoAttCap = getObserverInput('y', 'n');
-        TrialTypeRT = TrialQuestion - TrialResponse;
+        TrialTypeRT = TrialResponse - currTime;
         
         Screen('DrawTexture', stimuliScrn, t_blank);
         Screen('Flip', stimuliScrn);
@@ -239,7 +234,7 @@ stimulus(stimulus==0) = params.gray;
 
 %% draw distrater symbol
 if trialList(n,2)~=0
-[im_hsv dc] = DrawDisracter(im_hsv, xdist, ydist,tc, trialList(n,4);
+[im_hsv dc] = DrawDisracter(im_hsv, xdist, ydist,tc, trialList(n,4));
 
 stimulus = hsv2rgb(im_hsv);
 stimulus(stimulus==0) = params.gray;
@@ -284,7 +279,7 @@ else
     im((xt+c-d):(xt+c),(yt-c):(yt+c), 3) = 0;
 end
 else
-if rand < 0.5
+if direction==0
     dc = 1;
     im((xt-c):(xt-c+d), (yt-c):(yt+c),3) = 0;
     im( (xt-c):(xt+c),(yt-c):(yt-c+d),3) = 0;
@@ -298,4 +293,4 @@ end
 end
 end
 
-
+   

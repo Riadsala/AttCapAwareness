@@ -51,22 +51,24 @@ dat$captured = (abs(dat$pathLength - 1) > 0.2)
 
 aggregate(data=dat, thoughtNoAttCap ~ captured + observer + congC, FUN=mean)
 
-levels(dat$observer)=as.character(seq(1,10))
+levels(dat$observer)=as.character(seq(1,length(levels(dat$observer))))
 
 dat$captured = as.factor(dat$captured)
 levels(dat$captured) = c("good", "bad")
 
-dat$observer = as.factor(dat$observer)
+
 levels(dat$observer)=as.character(seq(1,10))
  dat$thoughtNoAttCap = as.factor(dat$thoughtNoAttCap)
  levels(dat$thoughtNoAttCap) = c("bad", "good")
 
-plt = ggplot(dat, aes(x=captured, fill=thoughtNoAttCap)) + geom_histogram(binwidth = 0.1) + facet_grid(congC~observer)
-plt = plt + theme_bw() + scale_y_continuous(name="number of trials") + scale_x_discrete(name=" ")
+plt = ggplot(dat, aes(x=captured, fill=thoughtNoAttCap)) 
+plt = plt + geom_histogram(binwidth = 0.1) + facet_grid(congC~observer)
+plt = plt + theme_bw() 
+plt = plt + scale_y_continuous(name="number of trials", limits=c(0,230), breaks=c(0,115, 230), labels=c("0%", "20%", "40%")) + scale_x_discrete(name=" ")
 plt = plt + theme(legend.position="top") + scale_fill_discrete(name="responded that the trial was:")
 # plt = plt + scale_fill_manual(values=colours)
-ggsave("../graphs/capturedAndThoughtA.pdf", width=10, height=5)
-ggsave("../graphs/capturedAndThoughtA.png", width=10, height=5)
+ggsave("../graphs/capturedAndThoughtA.pdf", width=12, height=5)
+ggsave("../graphs/capturedAndThoughtA.png", width=12, height=4)
 
 
 aggregate(data=rDat, targDiscrim ~ observer, FUN=mean)
@@ -74,8 +76,8 @@ aggregate(data=rDat, targDiscrim ~ observer, FUN=mean)
 
 
 library(Hmisc)
-pointEst = binconf(aggregate(data=dat, thoughtNoAttCap ~ captured + observer, FUN=sum)[,3], aggregate(data=dat, thoughtNoAttCap ~ captured + observer, FUN=length)[,3])
-a = aggregate(data=dat, thoughtNoAttCap ~ captured + observer, FUN=mean)
+pointEst = binconf(aggregate(data=dat, as.numeric(thoughtNoAttCap)-1 ~ captured + observer, FUN=sum)[,3], aggregate(data=dat, as.numeric(thoughtNoAttCap)-1 ~ captured + observer, FUN=length)[,3])
+a = aggregate(data=dat, as.numeric(thoughtNoAttCap)-1 ~ captured + observer, FUN=mean)
 # dat2 = data.frame(observer=a[,2], captured=a[,1], thoughtGoodTrial=a[,3], lower=pointEst[,2], upper=pointEst[,3])
 
 

@@ -34,7 +34,8 @@ ProcessASC <- function(asc)
 	return(fixDat)
 } 
 
-people = c(1,2)#,3,7,8,9,11,12,13,14,15,18,19)
+people = c(1,2,3,7,8,9,11,12,13,14,15,18,19,22,24,25)
+
 options(digits=3)
 rDat = data.frame(observer=numeric(), trial=numeric(), targLoc=numeric(), distLoc=numeric(), targDiscrim=numeric(), thoughtNoAttCap=numeric())
 fDat = data.frame(observer=numeric(), trial=numeric(), targLoc=numeric(), distLoc=numeric(), x=numeric(), y=numeric(), n=numeric())
@@ -42,11 +43,11 @@ for (person in people)
 {
 	print(person)
 
-	dat = read.csv(paste("../data/obs", person, ".txt", sep=""))
+	dat = read.csv(paste("../results/obs", person, ".txt", sep=""))
 	rDat = rbind(rDat, dat)
 	rm(dat)
 
-	asc = readLines(paste("../data/attcap", person, ".asc.txt", sep=""))
+	asc = readLines(paste("../results/attcap", person, ".asc", sep=""))
 	asc = strsplit(asc, "\t")
 	dat = ProcessASC(asc)
 	fDat = rbind(fDat, dat)

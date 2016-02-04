@@ -60,14 +60,14 @@ for (f in 1:nrow(fDat))
 fDat$aoi2 = as.factor(fDat$aoi2)
 # # now check each trial is valid and whether capture occurs
 
-for (tr in 1:nrow(rDat))
-{
-	tfDat = fDat[which(fDat$trial==rDat$trial[tr] & fDat$observer==rDat$observer[tr]),]
+# for (tr in 1:nrow(rDat))
+# {
+# 	tfDat = fDat[which(fDat$trial==rDat$trial[tr] & fDat$observer==rDat$observer[tr]),]
 
 
-	plt = ggplot() + geom_path(data=tfDat, aes(x=x, y=y)) #+ geom_text(data=tfDat, aes(x=x, y=y))#, label=aoi2
-	plt = plt + geom_text(aes(x=cDat$y,y=cDat$x, label=cDat$n))
-	ggsave(paste("trial", tr, ".png", sep=""))
+# 	plt = ggplot() + geom_path(data=tfDat, aes(x=x, y=y)) #+ geom_text(data=tfDat, aes(x=x, y=y))#, label=aoi2
+# 	plt = plt + geom_text(aes(x=cDat$y,y=cDat$x, label=cDat$n))
+# 	ggsave(paste("trial", tr, ".png", sep=""))
 
-}
+# }
 

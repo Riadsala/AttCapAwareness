@@ -1,5 +1,6 @@
 library(ggplot2)
 library(colorspace)
+library(BayesFactor)
 options(digits=3)
 fDat = read.csv("fixations.csv")
 rDat = read.csv("responses.csv")
@@ -82,7 +83,7 @@ a = aggregate(data=dat, as.numeric(thoughtNoAttCap)-1 ~ captured + observer, FUN
 
 
 # plt = ggplot(dat2, aes(x=captured, y=thoughtGoodTrial)) + geom_point(stat="identity") + facet_grid(~observer)
-# plt = plt + geom_errorbar(aes(ymin=lower, ymax=upper)) + scale_fill_manual(values=colours)
+# plt = plt + geom_errorbar(aes(ymin=lower, ymax=upper)) + scale_fill_manual(values=colours)Ï
 # plt = plt + theme_bw() + scale_y_continuous(name="responded that the trial was good")
 # ggsave("../graphs/capturedAndThoughtB.pdf", width=10, height=5)
 # ggsave("../graphs/capturedAndThoughtB.png", width=10, height=5)
@@ -109,3 +110,4 @@ plt = ggplot(dat_pr, aes(x=stat, y=val, fill=stat)) + geom_boxplot() + scale_fil
 plt = plt + theme_bw() + theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position="none")
 ggsave("../graphs/f1score.pdf", height=5, width=5)
 ggsave("../graphs/f1score.png", height=5, width=5)
+

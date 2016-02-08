@@ -41,8 +41,30 @@ levels(rDat$congC) = c('incongruent', 'congruent', 'no distracter')
 dat = rDat[-which(rDat$nFix<2),]
 dat$pathLength = dat$pathLength/256
 dat$captured = (abs(dat$pathLength - 1) > 0.2)
+dat$observer = as.factor(dat$observer)
+
+#  remove some outliers - for now, worst 1% of data
+# dat = filter(dat, RT<= quantile(dat$RT, 0.99))
+
+adat = aggregate(RT~observer+captured+congC+thoughtNoAttCap, dat, "median")
+adat2  = (dat 
+		%>% group_by(captured, congC, thoughtNoAttCap) 
+		%>% summarise(
+			meanRT=mean(RT), 
+			nTrials=length(RT),
+			stder =sd(RT)/sqrt(16)))
+
+plt = ggplot(adat2, aes(x=congC, y=meanRT, ymax=meanRT+1.96*stder, ymin=meanRT-1.96*stder))
+plt = plt + geom_point() + geom_errorbar() + geom_path()
+plt = plt + facet_grid(captured~thoughtNoAttCap)
+plt
+
+plt = ggplot(adat, aes(x=thoughtNoAttCap, y=RT, fill=congC)) 
+plt = plt + geom_boxplot() + facet_grid(.~captured)
+plt
 
 
-model <- lmer(log(RT) ~ congC + captured + thoughtNoAttCap + (thoughtNoAttCap + congC + captured | observer), data=filter(dat, congC!="no distracter"))
 
-model <- lmer(log(RT) ~ congC * captured * thoughtNoAttCap + (thoughtNoAttCap + congC + captured | observer), dat)
+model <- lmer(RT ~ congC + captured + (thoughtNoAttCap + congC + captured | observer), data=filter(dat, congC!="no distracter"))
+
+model <- lmer(RT ~ congC * captured * thoughtNoAttCap + (thoughtNoAttCap + congC + captured | observer), dat)

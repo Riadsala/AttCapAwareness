@@ -8,7 +8,6 @@ fDat$observer = as.factor(fDat$observer)
 rDat$pathLength = 0
 rDat$nFix = 0
 
-colours <- rainbow_hcl(4, start = 90, end = -30)
 
 for (tr in 1:nrow(rDat))
 {
@@ -35,6 +34,7 @@ rDat$congC[which(rDat$dc==0)] = 2
 rDat$congC = as.factor(rDat$congC)
 levels(rDat$congC) = c('incongruent', 'congruent', 'no distracter')
 
+
 # rDat$thoughNoAttCdap = as.factor(rDat$thoughNoAttCap)
 
 # now classify by pathlength
@@ -45,6 +45,7 @@ dat$observer = as.factor(dat$observer)
 
 #  remove some outliers - for now, worst 1% of data
 # dat = filter(dat, RT<= quantile(dat$RT, 0.99))
+dat = filter(dat, RT >= 0.150, RT <= 3)
 
 adat = aggregate(RT~observer+captured+congC+thoughtNoAttCap, dat, "median")
 adat2  = (dat 

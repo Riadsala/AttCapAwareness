@@ -8,7 +8,6 @@ fDat$observer = as.factor(fDat$observer)
 rDat$pathLength = 0
 rDat$nFix = 0
 
-
 for (tr in 1:nrow(rDat))
 {
 	fix = fDat[which((fDat$trial==rDat$trial[tr]) & (fDat$observer==rDat$observer[tr])),]
@@ -34,11 +33,12 @@ rDat$congC[which(rDat$dc==0)] = 2
 rDat$congC = as.factor(rDat$congC)
 levels(rDat$congC) = c('incongruent', 'congruent', 'no distracter')
 
-
-# rDat$thoughNoAttCdap = as.factor(rDat$thoughNoAttCap)
+# remove incorrect trials, and trials with NA pathlength
+dat = filter(rDat, targDiscrim==1, is.finite(pathLength))
 
 # now classify by pathlength
-dat = rDat[-which(rDat$nFix<2),]
+
+
 dat$pathLength = dat$pathLength/256
 dat$captured = (abs(dat$pathLength - 1) > 0.2)
 dat$observer = as.factor(dat$observer)
@@ -47,7 +47,27 @@ dat$observer = as.factor(dat$observer)
 # dat = filter(dat, RT<= quantile(dat$RT, 0.99))
 dat = filter(dat, RT >= 0.150, RT <= 3)
 
-adat = aggregate(RT~observer+captured+congC+thoughtNoAttCap, dat, "median")
+
+dat$captured = as.factor(dat$captured)
+levels(dat$captured) = c("direct", "capture")
+dat$thoughtNoAttCap = as.factor(dat$thoughtNoAttCap)
+levels(dat$thoughtNoAttCap) = c("thought captured", "thought direct")
+
+adat = aggregate(RT ~observer+captured+congC+thoughtNoAttCap, filter(dat,congC!="no distracter"), "median")
+icdat = select(filter(adat, congC=="incongruent"), observer, captured, thoughtNoAttCap, RT)
+names(icdat)[4] = "incongruent_RT"
+ccdat = select(filter(adat, congC=="congruent"), observer, captured, thoughtNoAttCap, RT)
+names(ccdat)[4] = "congruent_RT"
+compDat = merge(ccdat, icdat)
+rm(icdat, ccdat)
+compDat$RT_diff = compDat$congruent_RT - compDat$incongruent_RT
+
+cmpPlot = ggplot(compDat, aes(x=observer, y=RT_diff))+geom_bar(stat="identity")
+cmpPlot = cmpPlot + facet_grid(captured~thoughtNoAttCap)
+cmpPlot = cmpPlot + theme_linedraw()
+cmpPlot = cmpPlot + scale_y_continuous(name="congruent RT - incongruent RT")
+ggsave("rt2.pdf")
+
 adat2  = (dat 
 		%>% group_by(captured, congC, thoughtNoAttCap) 
 		%>% summarise(

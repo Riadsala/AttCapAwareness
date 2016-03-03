@@ -34,17 +34,7 @@ rDat$congC = as.factor(rDat$congC)
 levels(rDat$congC) = c('incongruent', 'congruent', 'no distracter')
 
 # remove incorrect trials, and trials with NA pathlength
-rDat$okTrial = 
-	rDat$targDiscrim==1 &
-	is.finite(rDat$pathLength) &
-	rDat$RT > 0.150 & rDat$RT < 3
-
-aggregate(okTrial ~ observer, rDat, "mean")
-
-dat = filter(rDat, okTrial==1)
-
-
-aggregate(RT ~observer+congC, dat, "median")
+dat = filter(rDat, targDiscrim==1, is.finite(pathLength))
 
 # now classify by pathlength
 
@@ -55,7 +45,7 @@ dat$observer = as.factor(dat$observer)
 
 #  remove some outliers - for now, worst 1% of data
 # dat = filter(dat, RT<= quantile(dat$RT, 0.99))
-
+dat = filter(dat, RT >= 0.150, RT <= 3)
 
 
 dat$captured = as.factor(dat$captured)
@@ -79,11 +69,13 @@ cmpPlot = cmpPlot + scale_y_continuous(name="congruent RT - incongruent RT")
 ggsave("rt2.pdf")
 
 adat2  = (dat 
-		%>% group_by(captured, congC, thoughtNoAttCap) 
+		%>% group_by(observer, captured, congC, thoughtNoAttCap) 
 		%>% summarise(
-			meanRT=mean(RT), 
-			nTrials=length(RT),
-			stder =sd(RT)/sqrt(16)))
+			medianRT=median(RT)))
+
+
+summary(lm(medianRT ~ captured * congC * thoughtNoAttCap, adat2))
+
 
 plt = ggplot(adat2, aes(x=congC, y=meanRT, ymax=meanRT+1.96*stder, ymin=meanRT-1.96*stder))
 plt = plt + geom_point() + geom_errorbar() + geom_path()
@@ -96,6 +88,9 @@ plt
 
 
 
-model <- lmer(RT ~ congC + captured + (thoughtNoAttCap + congC + captured | observer), data=filter(dat, congC!="no distracter"))
+model <- lmer(RT ~ congC + captured + thoughtNoAttCap + (thoughtNoAttCap + congC + captured | observer), data=filter(dat, congC!="no distracter"))
 
-model <- lmer(RT ~ congC * captured * thoughtNoAttCap + (thoughtNoAttCap + congC + captured | observer), dat)
+model <- lmer(
+	log(RT) ~ congC * captured * thoughtNoAttCap -
+	congC:captured:thoughtNoAttCap +
+	 (thoughtNoAttCap + congC + captured | observer), dat)

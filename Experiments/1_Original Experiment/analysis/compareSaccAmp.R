@@ -13,8 +13,9 @@ rDatA$observer = as.character(rDatA$observer)
 
 fDatB = read.csv("fixations.csv")
 rDatB = read.csv("responses.csv")
-fDatB$observer = as.character(fDatB$observer)
-rDatB$observer = as.character(rDatB$observer)
+fDatB$observer = factor(fDatB$observer, labels=c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"))
+rDatB$observer = factor(rDatB$observer, labels=c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"))
+
 fDat = rbind(fDatA, fDatB)
 rDat = rbind(rDatA, rDatB)
 fDat$observer = as.factor(fDat$observer)
@@ -46,6 +47,7 @@ for (tr in 1:nrow(rDat))
 	}
 }
 
+levels(dat$observer) = c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "A", "B")
 
 
 aggregate(data=rDat, targDiscrim ~ observer + distracter, FUN=mean)
@@ -73,9 +75,10 @@ dat$observer = as.factor(dat$observer)
 # levels(dat$observer)=as.character(seq(1,10))
  dat$thoughtNoAttCap = as.factor(dat$thoughtNoAttCap)
  levels(dat$thoughtNoAttCap) = c("bad", "good")
+levels(dat$observer) = c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "A", "B")
 
-plt = ggplot(dat, aes(x=captured, fill=thoughtNoAttCap)) + geom_histogram(binwidth = 0.1) + facet_grid(~observer)
-plt = plt + theme_bw() + scale_y_continuous(name="number of trials") + scale_x_discrete(name=" ")
+plt = ggplot(dat, aes(x=as.numeric(captured), fill=thoughtNoAttCap)) + geom_histogram(binwidth=1) + facet_grid(~observer)
+plt = plt + theme_bw() + scale_y_continuous(name="number of trials") + scale_x_continuous(name=" ", breaks=c(1.5, 2.5), labels=c("good", "bad"), limits=c(1,3))
 plt = plt + theme(legend.position="top") + scale_fill_discrete(name="responded that the trial was:")
 # plt = plt + scale_fill_manual(values=colours)
 ggsave("../graphs/capturedAndThoughtA.pdf", width=10, height=5)

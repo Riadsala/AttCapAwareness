@@ -57,7 +57,7 @@ levels(dat$observer)=as.character(seq(1,10))
  dat$thoughtNoAttCap = as.factor(dat$thoughtNoAttCap)
  levels(dat$thoughtNoAttCap) = c("bad", "good")
 
-plt = ggplot(dat, aes(x=captured, fill=thoughtNoAttCap)) + geom_histogram(binwidth = 0.1) + facet_grid(~observer)
+plt = ggplot(dat, aes(x=as.numeric(captured), fill=thoughtNoAttCap)) + geom_histogram(binwidth = 0.1) + facet_grid(~observer)
 plt = plt + theme_bw() + scale_y_continuous(name="number of trials") + scale_x_discrete(name=" ")
 plt = plt + theme(legend.position="top") + scale_fill_discrete(name="responded that the trial was:")
 # plt = plt + scale_fill_manual(values=colours)

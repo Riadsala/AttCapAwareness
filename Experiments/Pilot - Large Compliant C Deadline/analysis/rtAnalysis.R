@@ -88,7 +88,7 @@ plt
 
 
 
-model <- lmer(RT ~ congC + captured + thoughtNoAttCap + (thoughtNoAttCap + congC + captured | observer), data=filter(dat, congC!="no distracter"))
+model <- lmer(RT ~ congC * captured * thoughtNoAttCap + (thoughtNoAttCap + congC + captured | observer), data=filter(dat, congC!="no distracter"))
 
 model <- lmer(
 	log(RT) ~ congC * captured * thoughtNoAttCap -

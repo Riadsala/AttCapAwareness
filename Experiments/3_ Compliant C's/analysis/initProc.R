@@ -5,30 +5,32 @@ ProcessASC <- function(asc)
 	fixDat =  data.frame(observer=numeric(), trial=numeric(), n=numeric(), x=numeric(), y=numeric(), dur=numeric())
 
 	trialStarts = grep("TRIAL_START[0-9]*", asc)
-	trialEnds   = grep("TRIAL_END[0-9]*", asc)
+	trialEnds   = grep("STIM_OFF[0-9]*", asc)
 	nTrials = length(trialStarts)
 
 	for (t in 1:nTrials)
 	{
-		trial = asc[trialStarts[t]:trialEnds[t]]
-		fixationLines = grep("EFIX", trial)
-		
-		if (length(fixationLines)>0)
-		{
-			fixations = as.data.frame(matrix(unlist(trial[fixationLines]), byrow=T, ncol=6))
+		if (is.finite(trialEnds[t]))
+		{	
+			trial = asc[trialStarts[t]:trialEnds[t]]
+			fixationLines = grep("EFIX", trial)
+			
+			if (length(fixationLines)>0)
+			{
+				fixations = as.data.frame(matrix(unlist(trial[fixationLines]), byrow=T, ncol=6))
 
-			trialDat = data.frame(
-				observer=person, 
-				trial=t, 
-				x=as.numeric.factor(fixations$V4), y=as.numeric.factor(fixations$V5), dur=as.numeric.factor(fixations$V3))
+				trialDat = data.frame(
+					observer=person, 
+					trial=t, 
+					x=as.numeric.factor(fixations$V4), y=as.numeric.factor(fixations$V5), dur=as.numeric.factor(fixations$V3))
 
-			# convert to stimulus coordinates
-			 		
-			 trialDat$n = 1:length(trialDat$x)
-		
-			 fixDat = rbind(fixDat, trialDat)
-			 #rm(trialDat)
-
+				# convert to stimulus coordinates
+				 		
+				 trialDat$n = 1:length(trialDat$x)
+			
+				 fixDat = rbind(fixDat, trialDat)
+				 #rm(trialDat)
+			}
 		}
 	}
 	return(fixDat)

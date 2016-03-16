@@ -5,7 +5,7 @@ ProcessASC <- function(asc)
 	fixDat =  data.frame(observer=numeric(), trial=numeric(), n=numeric(), x=numeric(), y=numeric(), dur=numeric())
 
 	trialStarts = grep("TRIAL_START[0-9]*", asc)
-	trialEnds   = grep("TRIAL_END[0-9]*", asc)
+	trialEnds   = grep("STIM_OFF[0-9]*", asc)
 	nTrials = length(trialStarts)
 
 	for (t in 1:nTrials)
@@ -36,7 +36,7 @@ ProcessASC <- function(asc)
 	return(fixDat)
 } 
 
-people = c(98, 99)
+people = c(98, 99, 3,5,7)
 
 options(digits=3)
 rDat = data.frame(observer=numeric(), trial=numeric(), targLoc=numeric(), distLoc=numeric(), targDiscrim=numeric(), thoughtNoAttCap=numeric())

@@ -16,18 +16,20 @@ for (tr in 1:nrow(rDat))
 	rDat$nFix[tr] = nrow(fix)
 	if (nrow(fix)>1)
 	{
-		amp = sqrt((fix$x[1])^2+(fix$y[1])^2)
+		rDat$pathLength[tr] = 0
 		for (f in 2:nrow(fix))
 		{
 			amp = sqrt((fix$x[f]-fix$x[f-1])^2+(fix$y[f]-fix$y[f-1])^2)
 			rDat$pathLength[tr] = rDat$pathLength[tr] + amp
 		}
 		rm(amp)
+
 	}
 	else
 	{
 		rDat$pathLength[tr] = NaN
 	}
+	rm(fix)
 }
 
 rDat$congC = as.numeric(rDat$tc == rDat$dc)
@@ -50,6 +52,11 @@ dat = rDat[-which(rDat$nFix<2),]
 dat$pathLength = dat$pathLength/256
 dat$captured = (abs(dat$pathLength - 1) > 0.2)
 
+ pltPL = ggplot(dat, aes(x=pathLength)) + geom_density()
+ pltPL = pltPL + facet_grid(.~observer)
+ pltPL
+
+
 aggregate(data=dat, thoughtNoAttCap ~ captured + observer + congC, FUN=mean)
 
 levels(dat$observer)=as.character(seq(1,length(levels(dat$observer))))
@@ -63,7 +70,7 @@ levels(dat$observer)=as.character(seq(1,10))
  levels(dat$thoughtNoAttCap) = c("bad", "good")
 
 plt = ggplot(dat, aes(x=captured, fill=thoughtNoAttCap)) 
-plt = plt + geom_histogram(binwidth = 0.1) + facet_grid(congC~observer)
+plt = plt + geom_bar(stat="count") + facet_grid(congC~observer)
 plt = plt + theme_bw() 
 plt = plt + scale_y_continuous(name="number of trials", limits=c(0,230), breaks=c(0,115, 230), labels=c("0%", "20%", "40%")) + scale_x_discrete(name=" ")
 plt = plt + theme(legend.position="top") + scale_fill_discrete(name="responded that the trial was:")

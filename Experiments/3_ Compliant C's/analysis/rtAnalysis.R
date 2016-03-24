@@ -71,31 +71,34 @@ ccdat = select(filter(adat, congC=="congruent"), observer, captured, thought, RT
 names(ccdat)[4] = "congruent_RT"
 compDat = merge(ccdat, icdat)
 rm(icdat, ccdat)
-compDat$RT_diff = compDat$congruent_RT - compDat$incongruent_RT
+compDat$RT_diff = compDat$incongruent_RT - compDat$congruent_RT 
+
+m = lmer(RT_diff ~ captured * thought + (captured + thought|observer), compDat)
+
+
+
+
 
 cmpPlot = ggplot(compDat, aes(x=observer, y=RT_diff))+geom_bar(stat="identity")
 cmpPlot = cmpPlot + facet_grid(captured~thought)
 cmpPlot = cmpPlot + theme_linedraw()
-cmpPlot = cmpPlot + scale_y_continuous(name="congruent RT - incongruent RT")
+cmpPlot = cmpPlot + scale_y_continuous(name="incongruent RT - congruent RT")
 ggsave("rt2.pdf")
 
-adat2  = (dat 
-		%>% group_by(captured, congC, thought) 
+adat2  = (compDat 
+		%>% group_by(captured, thought) 
 		%>% summarise(
-			meanRT=mean(RT), 
-			nTrials=length(RT),
-			stder =sd(RT)/sqrt(16)))
+			meanRTdiff=mean(RT_diff), 
+			nPeople=length(RT_diff),
+			stder =sd(RT_diff)/sqrt(nPeople),
+			lower = meanRTdiff-1.96*stder,
+			upper = meanRTdiff+1.96*stder))
 
-plt = ggplot(adat2, aes(x=congC, y=meanRT, ymax=meanRT+1.96*stder, ymin=meanRT-1.96*stder))
-plt = plt + geom_point() + geom_errorbar() + geom_path()
-plt = plt + facet_grid(captured~thought)
-plt
-
-plt = ggplot(adat, aes(x=thought, y=RT, fill=congC)) 
-plt = plt + geom_boxplot(notch=T) + facet_grid(.~captured)
-plt
-
-
+agPlt = ggplot(adat2, aes(x=captured, y=meanRTdiff, ymin=lower, ymax=upper, colour=thought))
+agPlt = agPlt + geom_point() + geom_errorbar()
+agPlt = agPlt + theme_light() + scale_y_continuous("mean incongruent - congruent RT")
+agPlt = agPlt + scale_colour_brewer(palette = "Set1")
+ggsave("meanRT.pdf", width=5, height=5)
 
 model <- lmer(RT ~ congC + captured + (thought + congC + captured | observer), data=filter(dat, congC!="no distracter"))
 

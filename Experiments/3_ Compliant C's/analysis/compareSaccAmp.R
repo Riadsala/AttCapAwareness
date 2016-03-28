@@ -151,6 +151,8 @@ ggsave("../graphs/capturedAndThoughtAnodist.png", width=10, height=5)
 
 
 
+
+
 #  remove outlier RTs!
 dat = filter(dat, RT>0.1, RT<4)
 #  only include distracter present trials 
@@ -160,6 +162,15 @@ dat = filter(dat, distracter==1)
 dat$thoughtNoAttCap = as.factor(dat$thoughtNoAttCap)
 levels(dat$thoughtNoAttCap) = c("captured", "direct")
 names(dat)[6] = "thought"
+
+
+
+adat  = (dat
+		%>% group_by(observer, captured, thought, congC) 
+		%>% summarise(
+			medianRT=median(RT),
+			nTrials = length(RT)))
+
 adat = aggregate(RT ~observer+captured+congC+thought, filter(dat,congC!="no distracter"), "median")
 icdat = select(filter(adat, congC=="incongruent"), observer, captured, thought, RT)
 names(icdat)[4] = "incongruent_RT"

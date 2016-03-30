@@ -46,3 +46,5 @@ adat  = (rDist
 
 write.csv( adat, "distracterDwellTimes.txt", row.names=FALSE)
 
+plt = ggplot(adat, aes(x=thought, y=medianDwell)) + geom_boxplot()
+ggsave("dwellTime.pdf")

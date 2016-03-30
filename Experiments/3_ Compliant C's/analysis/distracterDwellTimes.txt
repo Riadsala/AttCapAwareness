@@ -1,4 +1,4 @@
-"observer","thought","medianRT","nTrials"
+"observer","thought","medianDwell","nTrials"
 1,"captured",140,79
 1,"direct",116,73
 2,"captured",236,33
@@ -11,10 +11,10 @@
 8,"direct",153,64
 9,"captured",138,114
 9,"direct",100,39
-11,"captured",224,246
-11,"direct",180,26
+11,"captured",224.5,246
+11,"direct",180.5,26
 12,"captured",121,11
-12,"direct",138,76
+12,"direct",138.5,76
 13,"captured",180,211
 13,"direct",186,38
 14,"captured",432,20
@@ -25,9 +25,9 @@
 18,"direct",162,27
 19,"captured",189,138
 19,"direct",143,12
-22,"captured",187,24
+22,"captured",187.5,24
 22,"direct",128,16
 24,"captured",137,171
-24,"direct",128,20
+24,"direct",128.5,20
 25,"captured",141,50
 25,"direct",116,41

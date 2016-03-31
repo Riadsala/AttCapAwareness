@@ -22,13 +22,18 @@ aggregate(okTrial ~ observer, rDat, "mean")
 dat = filter(rDat, okTrial==1)
 
 
-aggregate(RT ~observer+congC, dat, "median")
 
 
 #  remove some outliers - for now, worst 1% of data
 # dat = filter(dat, RT<= quantile(dat$RT, 0.99))
 
 
+adat  = (dat
+		%>% group_by(observer, thought, captured, congC, distracter) 
+		%>% summarise(
+			medianRT=median(RT),
+			nTrials = length(RT)))
+write.csv(adat, "summaryData", row.names=FALSE)
 
 
 adat = aggregate(RT ~observer+captured+congC+thought, filter(dat,congC!="no distracter"), "median")

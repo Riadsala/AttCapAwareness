@@ -33,7 +33,7 @@ adat  = (dat
 		%>% summarise(
 			medianRT=median(RT),
 			nTrials = length(RT)))
-write.csv(adat, "summaryData", row.names=FALSE)
+write.csv(adat, "summaryData.txt", row.names=FALSE)
 
 
 adat = aggregate(RT ~observer+captured+congC+thought, filter(dat,congC!="no distracter"), "median")

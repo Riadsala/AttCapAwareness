@@ -1,0 +1,93 @@
+"observer","thought","captured","congC","distracter","medianRT","nTrials"
+1,"captured","direct","congruent",1,0.726095,1
+1,"direct","direct","congruent",1,0.602712,27
+1,"direct","direct","incongruent",1,0.662265,29
+1,"direct","direct","no distracter",0,0.6157295,96
+1,"direct","fixatedDistracter","congruent",1,0.68802,45
+1,"direct","fixatedDistracter","incongruent",1,0.775113,49
+1,"direct","none","congruent",1,0.570375,43
+1,"direct","none","incongruent",1,0.580184,37
+1,"direct","none","no distracter",0,0.554435,141
+1,"direct","tooLong","congruent",1,0.841442,3
+1,"direct","tooLong","incongruent",1,0.697949,6
+1,"direct","tooLong","no distracter",0,0.6350485,12
+2,"captured","direct","no distracter",0,1.056553,2
+2,"captured","fixatedDistracter","congruent",1,1.112258,27
+2,"captured","fixatedDistracter","incongruent",1,1.078096,28
+2,"captured","tooLong","incongruent",1,1.0625695,2
+2,"direct","direct","congruent",1,0.79643,16
+2,"direct","direct","incongruent",1,0.780263,16
+2,"direct","direct","no distracter",0,0.673397,98
+2,"direct","fixatedDistracter","congruent",1,0.729428,65
+2,"direct","fixatedDistracter","incongruent",1,0.795815,73
+2,"direct","none","congruent",1,0.8296375,10
+2,"direct","none","incongruent",1,0.721056,6
+2,"direct","none","no distracter",0,0.61768,55
+2,"direct","tooLong","congruent",1,0.81517,9
+2,"direct","tooLong","incongruent",1,0.7221075,10
+2,"direct","tooLong","no distracter",0,0.696717,47
+3,"captured","fixatedDistracter","congruent",1,0.624395,3
+3,"direct","direct","congruent",1,0.69642,35
+3,"direct","direct","incongruent",1,0.671551,33
+3,"direct","direct","no distracter",0,0.639416,69
+3,"direct","fixatedDistracter","congruent",1,0.809732,58
+3,"direct","fixatedDistracter","incongruent",1,0.7674985,62
+3,"direct","none","congruent",1,0.6171605,14
+3,"direct","none","incongruent",1,0.6207135,20
+3,"direct","none","no distracter",0,0.544896,103
+3,"direct","tooLong","congruent",1,0.6447485,4
+3,"direct","tooLong","incongruent",1,0.99029,1
+3,"direct","tooLong","no distracter",0,0.582682,3
+5,"captured","direct","congruent",1,0.986451,5
+5,"captured","direct","incongruent",1,1.07175,1
+5,"captured","direct","no distracter",0,0.755355,24
+5,"captured","fixatedDistracter","congruent",1,0.793624,23
+5,"captured","fixatedDistracter","incongruent",1,0.953827,25
+5,"captured","none","congruent",1,0.673592,3
+5,"captured","none","incongruent",1,0.781832,3
+5,"captured","none","no distracter",0,0.763917,16
+5,"captured","tooLong","congruent",1,0.933359,7
+5,"captured","tooLong","incongruent",1,0.882304,2
+5,"captured","tooLong","no distracter",0,0.8096465,12
+5,"direct","direct","congruent",1,0.841024,5
+5,"direct","direct","incongruent",1,0.8231825,2
+5,"direct","direct","no distracter",0,0.7545,78
+5,"direct","fixatedDistracter","congruent",1,0.8644545,84
+5,"direct","fixatedDistracter","incongruent",1,0.9260695,76
+5,"direct","none","congruent",1,0.7607355,6
+5,"direct","none","incongruent",1,0.888006,4
+5,"direct","none","no distracter",0,0.755296,83
+5,"direct","tooLong","congruent",1,0.727319,8
+5,"direct","tooLong","incongruent",1,0.86782,21
+5,"direct","tooLong","no distracter",0,0.78523,67
+6,"captured","direct","congruent",1,0.797041,2
+6,"captured","direct","incongruent",1,0.843717,2
+6,"captured","fixatedDistracter","congruent",1,0.86364,26
+6,"captured","fixatedDistracter","incongruent",1,1.06462,25
+6,"captured","none","congruent",1,0.926948,2
+6,"captured","none","incongruent",1,0.9747855,6
+6,"direct","direct","congruent",1,0.7729395,8
+6,"direct","direct","incongruent",1,0.8315585,14
+6,"direct","direct","no distracter",0,0.651737,43
+6,"direct","fixatedDistracter","congruent",1,0.658271,45
+6,"direct","fixatedDistracter","incongruent",1,0.7786055,40
+6,"direct","none","congruent",1,0.683131,8
+6,"direct","none","incongruent",1,0.6919125,6
+6,"direct","none","no distracter",0,0.636685,27
+6,"direct","tooLong","congruent",1,0.899884,4
+6,"direct","tooLong","incongruent",1,0.534187,1
+6,"direct","tooLong","no distracter",0,0.916023,5
+7,"captured","fixatedDistracter","congruent",1,1.009559,19
+7,"captured","fixatedDistracter","incongruent",1,0.975336,23
+7,"captured","none","congruent",1,1.061022,3
+7,"captured","none","incongruent",1,0.684709,1
+7,"captured","tooLong","congruent",1,1.171902,1
+7,"direct","direct","congruent",1,0.671115,22
+7,"direct","direct","incongruent",1,0.7159345,22
+7,"direct","direct","no distracter",0,0.6351725,58
+7,"direct","fixatedDistracter","congruent",1,0.863044,3
+7,"direct","fixatedDistracter","incongruent",1,0.901656,3
+7,"direct","none","congruent",1,0.68356,1
+7,"direct","none","incongruent",1,0.685181,2
+7,"direct","none","no distracter",0,0.6818025,14
+7,"direct","tooLong","congruent",1,0.652806,1

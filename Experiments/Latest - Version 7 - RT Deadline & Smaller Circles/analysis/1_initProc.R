@@ -38,7 +38,11 @@ ProcessASC <- function(asc)
 	return(fixDat)
 } 
 
+<<<<<<< HEAD
 people = c(1,2,3,5,6,7)
+=======
+people = c(1,2,3,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21)
+>>>>>>> origin/master
 
 options(digits=3)
 rDat = data.frame(observer=numeric(), trial=numeric(), targLoc=numeric(), distLoc=numeric(), targDiscrim=numeric(), thoughtNoAttCap=numeric())

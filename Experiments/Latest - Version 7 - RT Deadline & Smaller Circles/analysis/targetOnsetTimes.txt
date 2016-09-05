@@ -79,3 +79,188 @@
 7,"direct","none","incongruent",112,1
 7,"direct","none","no distracter",120,13
 7,"direct","tooLong","congruent",230,1
+<<<<<<< HEAD
+=======
+8,"direct","direct","congruent",180,42
+8,"direct","direct","incongruent",187,34
+8,"direct","direct","no distracter",190,164
+8,"direct","fixatedDistracter","congruent",379,40
+8,"direct","fixatedDistracter","incongruent",458,34
+8,"direct","none","congruent",164,3
+8,"direct","none","incongruent",153,2
+8,"direct","none","no distracter",165,18
+8,"direct","tooLong","congruent",376,6
+8,"direct","tooLong","incongruent",332,3
+8,"direct","tooLong","no distracter",911,6
+9,"captured","fixatedDistracter","congruent",704,1
+9,"captured","tooLong","incongruent",1397,1
+9,"direct","direct","congruent",235,9
+9,"direct","direct","incongruent",168,7
+9,"direct","direct","no distracter",294,32
+9,"direct","fixatedDistracter","congruent",888,11
+9,"direct","fixatedDistracter","incongruent",1297,20
+9,"direct","none","no distracter",112,1
+9,"direct","tooLong","congruent",902,5
+9,"direct","tooLong","incongruent",918,9
+9,"direct","tooLong","no distracter",1106,67
+10,"captured","direct","congruent",131,3
+10,"captured","fixatedDistracter","congruent",409,10
+10,"captured","fixatedDistracter","incongruent",463,14
+10,"captured","none","incongruent",144,1
+10,"captured","tooLong","congruent",1122,1
+10,"direct","direct","congruent",181,61
+10,"direct","direct","incongruent",190,77
+10,"direct","direct","no distracter",171,190
+10,"direct","fixatedDistracter","congruent",367,10
+10,"direct","fixatedDistracter","incongruent",346,9
+10,"direct","none","congruent",136,8
+10,"direct","none","incongruent",134,7
+10,"direct","none","no distracter",167,42
+10,"direct","tooLong","congruent",282,9
+10,"direct","tooLong","incongruent",388,4
+10,"direct","tooLong","no distracter",553,2
+12,"captured","fixatedDistracter","incongruent",989,2
+12,"captured","tooLong","congruent",154,1
+12,"direct","direct","congruent",257,3
+12,"direct","direct","incongruent",512,6
+12,"direct","direct","no distracter",351,24
+12,"direct","fixatedDistracter","congruent",1171,27
+12,"direct","fixatedDistracter","incongruent",664,27
+12,"direct","none","no distracter",191,2
+12,"direct","tooLong","congruent",932,7
+12,"direct","tooLong","incongruent",958,14
+12,"direct","tooLong","no distracter",1004,59
+13,"captured","direct","congruent",176,1
+13,"captured","direct","incongruent",268,1
+13,"captured","fixatedDistracter","congruent",577,8
+13,"captured","fixatedDistracter","incongruent",565,8
+13,"direct","direct","congruent",178,17
+13,"direct","direct","incongruent",193,19
+13,"direct","direct","no distracter",206,33
+13,"direct","fixatedDistracter","congruent",285,1
+13,"direct","fixatedDistracter","incongruent",321,2
+13,"direct","none","congruent",144,4
+13,"direct","none","incongruent",146,2
+13,"direct","none","no distracter",160,9
+13,"direct","tooLong","congruent",1482,1
+13,"direct","tooLong","incongruent",511,4
+13,"direct","tooLong","no distracter",1219,2
+14,"captured","direct","incongruent",359,1
+14,"captured","fixatedDistracter","congruent",817,11
+14,"captured","fixatedDistracter","incongruent",545,24
+14,"direct","direct","congruent",225,4
+14,"direct","direct","incongruent",200,4
+14,"direct","direct","no distracter",300,42
+14,"direct","fixatedDistracter","congruent",585,20
+14,"direct","fixatedDistracter","incongruent",586,24
+14,"direct","none","no distracter",207,5
+14,"direct","tooLong","congruent",1161,4
+14,"direct","tooLong","incongruent",796,8
+14,"direct","tooLong","no distracter",676,29
+15,"captured","direct","congruent",189,2
+15,"captured","direct","incongruent",390,2
+15,"captured","fixatedDistracter","congruent",479,3
+15,"captured","fixatedDistracter","incongruent",529,6
+15,"captured","tooLong","incongruent",311,2
+15,"direct","direct","congruent",217,33
+15,"direct","direct","incongruent",227,23
+15,"direct","direct","no distracter",233,86
+15,"direct","fixatedDistracter","congruent",412,3
+15,"direct","fixatedDistracter","incongruent",468,11
+15,"direct","none","congruent",141,11
+15,"direct","none","incongruent",194,7
+15,"direct","none","no distracter",170,52
+15,"direct","tooLong","congruent",393,5
+15,"direct","tooLong","incongruent",262,5
+15,"direct","tooLong","no distracter",273,3
+16,"direct","direct","congruent",801,33
+16,"direct","direct","incongruent",996,25
+16,"direct","direct","no distracter",943,98
+16,"direct","fixatedDistracter","congruent",1138,29
+16,"direct","fixatedDistracter","incongruent",1230,22
+16,"direct","none","congruent",174,10
+16,"direct","none","incongruent",147,10
+16,"direct","none","no distracter",200,43
+16,"direct","tooLong","congruent",1100,25
+16,"direct","tooLong","incongruent",1166,25
+16,"direct","tooLong","no distracter",1138,56
+17,"captured","direct","congruent",288,13
+17,"captured","direct","incongruent",303,17
+17,"captured","direct","no distracter",334,7
+17,"captured","fixatedDistracter","congruent",491,25
+17,"captured","fixatedDistracter","incongruent",534,10
+17,"captured","none","no distracter",187,1
+17,"captured","tooLong","congruent",1230,1
+17,"captured","tooLong","incongruent",1171,4
+17,"direct","direct","congruent",231,18
+17,"direct","direct","incongruent",347,23
+17,"direct","direct","no distracter",257,107
+17,"direct","fixatedDistracter","congruent",717,6
+17,"direct","fixatedDistracter","incongruent",785,5
+17,"direct","none","congruent",154,1
+17,"direct","none","incongruent",165,4
+17,"direct","none","no distracter",199,3
+17,"direct","tooLong","congruent",1550,1
+17,"direct","tooLong","incongruent",250,6
+17,"direct","tooLong","no distracter",1248,12
+18,"captured","direct","congruent",457,1
+18,"captured","direct","incongruent",164,1
+18,"captured","fixatedDistracter","congruent",488,7
+18,"captured","fixatedDistracter","incongruent",705,2
+18,"captured","tooLong","congruent",402,1
+18,"captured","tooLong","incongruent",866,2
+18,"direct","direct","congruent",222,24
+18,"direct","direct","incongruent",193,26
+18,"direct","direct","no distracter",216,71
+18,"direct","fixatedDistracter","congruent",378,7
+18,"direct","fixatedDistracter","incongruent",742,6
+18,"direct","none","congruent",233,2
+18,"direct","none","incongruent",152,4
+18,"direct","none","no distracter",190,6
+18,"direct","tooLong","congruent",623,5
+18,"direct","tooLong","incongruent",589,7
+18,"direct","tooLong","no distracter",698,8
+19,"captured","direct","incongruent",1362,1
+19,"captured","direct","no distracter",637,2
+19,"captured","fixatedDistracter","incongruent",1135,3
+19,"direct","direct","congruent",874,7
+19,"direct","direct","incongruent",1146,10
+19,"direct","direct","no distracter",1051,118
+19,"direct","fixatedDistracter","congruent",976,4
+19,"direct","fixatedDistracter","incongruent",1549,2
+19,"direct","none","congruent",908,1
+19,"direct","none","incongruent",965,2
+19,"direct","none","no distracter",232,3
+19,"direct","tooLong","congruent",1117,3
+19,"direct","tooLong","incongruent",1271,5
+19,"direct","tooLong","no distracter",1419,14
+20,"captured","fixatedDistracter","congruent",1247,3
+20,"captured","fixatedDistracter","incongruent",453,3
+20,"direct","direct","congruent",337,17
+20,"direct","direct","incongruent",1070,19
+20,"direct","direct","no distracter",296,75
+20,"direct","fixatedDistracter","congruent",833,10
+20,"direct","fixatedDistracter","incongruent",619,13
+20,"direct","none","congruent",179,8
+20,"direct","none","incongruent",245,8
+20,"direct","none","no distracter",207,29
+20,"direct","tooLong","congruent",1163,7
+20,"direct","tooLong","incongruent",1221,5
+20,"direct","tooLong","no distracter",1220,14
+21,"captured","direct","congruent",787,4
+21,"captured","direct","incongruent",166,5
+21,"captured","fixatedDistracter","congruent",498,5
+21,"captured","fixatedDistracter","incongruent",559,8
+21,"captured","tooLong","incongruent",853,2
+21,"direct","direct","congruent",200,40
+21,"direct","direct","incongruent",239,44
+21,"direct","direct","no distracter",248,97
+21,"direct","fixatedDistracter","congruent",1236,11
+21,"direct","fixatedDistracter","incongruent",359,9
+21,"direct","none","congruent",134,8
+21,"direct","none","incongruent",161,9
+21,"direct","none","no distracter",163,28
+21,"direct","tooLong","congruent",602,4
+21,"direct","tooLong","incongruent",356,5
+21,"direct","tooLong","no distracter",1323,6
+>>>>>>> origin/master

@@ -38,7 +38,8 @@ ProcessASC <- function(asc)
 	return(fixDat)
 } 
 
-people = c(1,2,3,7,8,9,11,12,13,14,15,18,19,22,24,25)
+people = seq(1,25)
+
 
 options(digits=3)
 rDat = data.frame(observer=numeric(), trial=numeric(), targLoc=numeric(), distLoc=numeric(), targDiscrim=numeric(), thoughtNoAttCap=numeric())

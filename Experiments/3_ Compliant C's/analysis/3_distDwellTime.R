@@ -1,8 +1,9 @@
 library(ggplot2)
 library(dplyr)
 
-fDat = read.csv("aoiFixationData.txt")
-rDat = read.csv("responses.csv")
+
+fDat = read.csv("aoiFixationData.csv")
+rDat = read.csv("responseCapture.csv")
 
 
 rDat$lookedAtTarg = FALSE
@@ -32,14 +33,10 @@ for (ii in 1:nrow(rDist))
 	rDist$distDwell[ii] = sum(distFix$dur)
 }
 
-rDist$thoughtNoAttCap = as.factor(rDist$thoughtNoAttCap)
-levels(rDist$thoughtNoAttCap) = c("captured", "direct")
-names(rDist)[6] = "thought"
-
 
 
 adat  = (rDist
-		%>% group_by(observer, thought) 
+		%>% group_by(observer, thought, congC) 
 		%>% summarise(
 			medianDwell=median(distDwell),
 			nTrials = length(distDwell)))
@@ -47,4 +44,6 @@ adat  = (rDist
 write.csv( adat, "distracterDwellTimes.txt", row.names=FALSE)
 
 plt = ggplot(adat, aes(x=thought, y=medianDwell)) + geom_boxplot()
+plt = plt + facet_grid(.~congC)
+
 ggsave("dwellTime.pdf")

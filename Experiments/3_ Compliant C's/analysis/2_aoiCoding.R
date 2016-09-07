@@ -5,6 +5,7 @@ options(digits=3)
 fDat = read.csv("fixations.csv")
 rDat = read.csv("responses.csv")
 fDat$observer = as.factor(fDat$observer)
+rDat$observer = as.factor(rDat$observer)
 rDat$pathLength = 0
 rDat$nFix = 0
 
@@ -59,38 +60,27 @@ for (f in 1:nrow(fDat))
 	tr = fDat$trial[f]
 	obs = fDat$observer[f]
 	trialDat = filter(rDat, trial==tr, observer==obs)
-	target = trialDat$targLoc
-	distracter = trialDat$distLoc
-	if (fDat$aoi[f] == "c")
+	if (nrow(trialDat)>0)
 	{
-		fDat$aoi2[f] = "centre"
-	} else if (fDat$aoi[f] == as.character(target))
-	{
-		fDat$aoi2[f] = "target"
-	} else if (fDat$aoi[f] == as.character(paste("d", distracter, sep="")))
-	{
-		fDat$aoi2[f] = "distracter"
-	} else {
-		fDat$aoi2[f] = "blank"
+		target = trialDat$targLoc
+		distracter = trialDat$distLoc
+		if (fDat$aoi[f] == "c")
+		{
+			fDat$aoi2[f] = "centre"
+		} else if (fDat$aoi[f] == as.character(target))
+		{
+			fDat$aoi2[f] = "target"
+		} else if (fDat$aoi[f] == as.character(paste("d", distracter, sep="")))
+		{
+			fDat$aoi2[f] = "distracter"
+		} else {
+			fDat$aoi2[f] = "blank"
+		}
 	}
 }
 fDat$aoi = as.factor(fDat$aoi)
 fDat$aoi2 = as.factor(fDat$aoi2)
 
-rDat$lookedAtTarg = FALSE
-rDat$lookedAtDist = FALSE
-
-
-# determine if trial included fixation to target or distracter
-for (tr in 1:nrow(rDat))
-{
-	tfDat = fDat[which(fDat$trial==rDat$trial[tr] & fDat$observer==rDat$observer[tr]),]
-	rDat$lookedAtTarg[tr] = sum(tfDat$aoi2 == "target")>0
-	rDat$lookedAtDist[tr] = sum(tfDat$aoi2 == "distracter")>0
-}
-
-rDat$lookedAtTarg = as.logical(rDat$lookedAtTarg)
-rDat$lookedAtDist = as.logical(rDat$lookedAtDist)
 
 #  get total path length for each trials
 for (tr in 1:nrow(rDat))
@@ -114,6 +104,19 @@ for (tr in 1:nrow(rDat))
 }
 
 
+
+# determine if trial included fixation to target or distracter
+for (tr in 1:nrow(rDat))
+{
+	tfDat = fDat[which(fDat$trial==rDat$trial[tr] & fDat$observer==rDat$observer[tr]),]
+	rDat$lookedAtTarg[tr] = sum(tfDat$aoi2 == "target")>0
+	rDat$lookedAtDist[tr] = sum(tfDat$aoi2 == "distracter")>0
+}
+
+rDat$lookedAtTarg = as.logical(rDat$lookedAtTarg)
+rDat$lookedAtDist = as.logical(rDat$lookedAtDist)
+
+
 dat = rDat
 rm(rDat)
 
@@ -127,8 +130,8 @@ dat$lengthOK = as.factor(abs(dat$pathLength - 1) < 0.2)
 #  classify trial
 dat$captured = 'none'
 dat$captured[as.logical(dat$lengthOK) & (dat$lookedAtTarg==TRUE)] = "direct"
-dat$captured[dat$pathLength>1.2] = "tooLong"
-dat$captured[dat$lookedAtDist==TRUE] = "fixatedDistracter"
+dat$captured[dat$pathLength>1.2] = "too long"
+dat$captured[dat$lookedAtDist==TRUE] = "fixated distracter"
 
 dat$captured = as.factor(dat$captured)
 

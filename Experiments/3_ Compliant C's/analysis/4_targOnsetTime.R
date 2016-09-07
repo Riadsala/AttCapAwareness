@@ -32,14 +32,11 @@ for (ii in 1:nrow(rTarg))
 	rTarg$targOnset[ii] = min(targFix$onset)
 }
 
-rTarg$thoughtNoAttCap = as.factor(rTarg$thoughtNoAttCap)
-levels(rTarg$thoughtNoAttCap) = c("captured", "direct")
-names(rTarg)[6] = "thought"
 
 
 
 adat  = (rTarg
-		%>% group_by(observer, thought, captured) 
+		%>% group_by(observer, thought, captured, congC) 
 		%>% summarise(
 			medianOnset=median(targOnset),
 			nTrials = length(targOnset)))
@@ -47,4 +44,5 @@ adat  = (rTarg
 write.csv( adat, "targetOnsetTimes.txt", row.names=FALSE)
 
 plt = ggplot(adat, aes(x=thought, y=medianOnset, fill=captured)) + geom_boxplot()
+plt = plt + facet_grid(.~congC)
 ggsave("onsetTime.pdf")

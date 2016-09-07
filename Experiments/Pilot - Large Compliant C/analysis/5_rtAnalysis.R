@@ -75,7 +75,7 @@ adat2  = (compDat
 			lower = meanRTdiff-1.96*stder,
 			upper = meanRTdiff+1.96*stder))
 
-agPlt = ggplot(filter(adat2, captured!="none") , aes(x=captured, y=meanRTdiff, ymin=lower, ymax=upper, colour=thought))
+agPlt = ggplot(adat2, aes(x=captured, y=meanRTdiff, ymin=lower, ymax=upper, colour=thought))
 agPlt = agPlt + geom_point() + geom_errorbar()
 agPlt = agPlt + theme_light() + scale_y_continuous("mean incongruent - congruent RT")
 agPlt = agPlt + scale_colour_brewer(palette = "Set1")

@@ -22,12 +22,14 @@ ProcessASC <- function(asc)
 				trialDat = data.frame(
 					observer=person, 
 					trial=t, 
-					x=as.numeric.factor(fixations$V4), y=as.numeric.factor(fixations$V5), dur=as.numeric.factor(fixations$V3))
+					x=as.numeric.factor(fixations$V4), y=as.numeric.factor(fixations$V5), dur=as.numeric.factor(fixations$V3), onset=as.numeric.factor(fixations$V2))
 
-				# convert to stimulus coordinates
-				 		
+				# convert to stimulus coordinates				 		
 				 trialDat$n = 1:length(trialDat$x)
 			
+			    # set onset times relative to first fixations
+				trialDat$onset = trialDat$onset - trialDat$onset[1] 
+
 				 fixDat = rbind(fixDat, trialDat)
 				 #rm(trialDat)
 			}
@@ -36,7 +38,8 @@ ProcessASC <- function(asc)
 	return(fixDat)
 } 
 
-people = c(98, 99, 3,5,7)
+people = c(1,2,3,4,6)
+
 
 options(digits=3)
 rDat = data.frame(observer=numeric(), trial=numeric(), targLoc=numeric(), distLoc=numeric(), targDiscrim=numeric(), thoughtNoAttCap=numeric())

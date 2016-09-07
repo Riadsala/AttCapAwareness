@@ -130,8 +130,8 @@ dat$lengthOK = as.factor(abs(dat$pathLength - 1) < 0.2)
 #  classify trial
 dat$captured = 'none'
 dat$captured[as.logical(dat$lengthOK) & (dat$lookedAtTarg==TRUE)] = "direct"
-dat$captured[dat$pathLength>1.2] = "tooLong"
-dat$captured[dat$lookedAtDist==TRUE] = "fixatedDistracter"
+dat$captured[dat$pathLength>1.2] = "too long"
+dat$captured[dat$lookedAtDist==TRUE] = "fixated distracter"
 
 dat$captured = as.factor(dat$captured)
 

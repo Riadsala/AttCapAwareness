@@ -30,8 +30,8 @@ ProcessASC <- function(asc)
 			    # set onset times relative to first fixations
 				trialDat$onset = trialDat$onset - trialDat$onset[1] 
 
-				 fixDat = rbind(fixDat, trialDat)
-				 #rm(trialDat)
+				fixDat = rbind(fixDat, trialDat)
+				#rm(trialDat)
 			}
 		}
 	}
@@ -39,6 +39,7 @@ ProcessASC <- function(asc)
 } 
 
 people = c(1,2,3,4,5,6,7,8,9)
+
 
 options(digits=3)
 rDat = data.frame(observer=numeric(), trial=numeric(), targLoc=numeric(), distLoc=numeric(), targDiscrim=numeric(), thoughtNoAttCap=numeric())

@@ -2,10 +2,11 @@ library(ggplot2)
 library(lme4)
 library(car)
 library(dplyr)
+library(tidyr)
 fDat = read.csv("aoiFixationData.csv")
 rDat = read.csv("responseCapture.csv")
 
-
+rDat$observer = as.factor(rDat$observer)
 fDat$observer = as.factor(fDat$observer)
 
 # remove incorrect trials, and trials with NA pathlength
@@ -19,6 +20,23 @@ aggregate(okTrial ~ observer, rDat, "mean")
 dat = filter(rDat, okTrial==1)
 
 
+m = lmer(data=filter(dat, captured=="fixated distracter", congC!="no distracter"), 
+	RT ~ congC * thought + (congC * thought|observer), 
+	control=lmerControl(optimizer="bobyqa"))
+ci95 = confint(m, method="boot")
+
+mdat = data.frame(effect=c("incongruent C", "incorrectly thought direct", "interaction"),
+	estimate=fixef(m)[2:4], 
+	lower=c(ci95["congCincongruent",1],ci95["thoughtdirect",1], ci95["congCincongruent:thoughtdirect",1]),
+	upper=c(ci95["congCincongruent",2],ci95["thoughtdirect",2], ci95["congCincongruent:thoughtdirect",2]))
+
+
+mplt = ggplot(mdat, aes(x=effect, y=estimate, ymin=lower, ymax=upper))
+mplt = mplt + geom_point() + geom_errorbar()
+mplt = mplt + theme_bw()
+mplt = mplt +scale_y_continuous(name="estimate effect on RT (seconds)")
+ggsave("../plots/modelFit.pdf")
+
 #  remove some outliers - for now, worst 1% of data
 # dat = filter(dat, RT<= quantile(dat$RT, 0.99))
 
@@ -27,16 +45,18 @@ adat  = (filter(dat, congC!="no distracter")
 		%>% summarise(
 			medianRT=median(RT),
 			nTrials = length(RT)))
-write.csv(adat, "summaryData.txt", row.names=FALSE)
-adat$observer = as.factor(adat$observer)
 
 
 plt = ggplot(adat, aes(x=observer, y=nTrials, fill=congC))+geom_bar(stat="identity", position=position_dodge())
 plt = plt + facet_grid(captured~thought)
 plt = plt + theme_light()
-plt = plt + scale_y_continuous(name="median RT")
+plt = plt + scale_y_continuous(name="number of trials")
 ggsave("../plots/nTrialsByCondition.pdf", width=8, height=6)
 
+
+# simple analysis - only take conditions in which we have > minN trials
+minN = 15
+adat$medianRT[adat$nTrials<minN] = NaN
 
 plt = ggplot(filter(adat, captured!="none"), aes(x=observer, y=medianRT, fill=congC))+geom_bar(stat="identity", position=position_dodge())
 plt = plt + facet_grid(captured~thought)
@@ -44,19 +64,13 @@ plt = plt + theme_bw()
 plt = plt + scale_y_continuous(name="median RT")
 ggsave("../plots/MedianRT.pdf", width=8, height=6)
 
+m = aov(data=filter(adat, captured=="fixated distracter"), 
+	medianRT ~ thought *congC  + Error(observer / (thought*congC)))
+summary(m)
 
-
-adat = aggregate(RT ~observer+captured+congC+thought, filter(dat,congC!="no distracter"), "median")
-icdat = select(filter(adat, congC=="incongruent"), observer, captured, thought, RT)
-names(icdat)[4] = "incongruent_RT"
-ccdat = select(filter(adat, congC=="congruent"), observer, captured, thought, RT)
-names(ccdat)[4] = "congruent_RT"
-compDat = merge(ccdat, icdat)
-rm(icdat, ccdat)
-compDat$RT_diff = compDat$incongruent_RT - compDat$congruent_RT 
-
-# m = lmer(RT_diff ~ captured * thought + (captured + thought|observer), compDat)
-
+adat$congC = droplevels(adat$congC)
+adat = filter(adat, captured == "fixated distracter")
+adat$captured = droplevels(adat$captured)
 
 
 
@@ -65,6 +79,10 @@ cmpPlot = cmpPlot + facet_grid(captured~thought)
 cmpPlot = cmpPlot + theme_linedraw()
 cmpPlot = cmpPlot + scale_y_continuous(name="median incongruent RT - median congruent RT")
 ggsave("../plots/differenceInMedianRT.pdf")
+
+# jsut take fixatedDistracter condition
+compDat = filter(compDat, captured == "fixated distracter")
+
 
 adat2  = (compDat 
 		%>% group_by(captured, thought) 

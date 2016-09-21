@@ -5,10 +5,10 @@ options(digits=3)
 
 
 # get author data
-fDatA = read.csv("../../2_ Authors Exp - Full disclosure/analysis/fixations.csv")
+fDatA = read.csv("../authorsData/fixations.csv")
 fDatA$observer = factor(fDatA$observer, labels=c('A', 'B'))
 fDatA$observer = as.character(fDatA$observer)
-rDatA = read.csv("../../2_ Authors Exp - Full disclosure/analysis/responses.csv")
+rDatA = read.csv("../authorsData/responses.csv")
 rDatA$observer = factor(rDatA$observer, labels=c('A', 'B'))
 rDatA$observer = as.character(rDatA$observer)
 
@@ -26,12 +26,9 @@ rDat$pathLength = 0
 
 rDat$nFix = 0
 
-
-
 rDat$distLocO = rDat$distLoc
 rDat$distLoc = (rDat$distLoc + (rDat$targLoc-1)) %% 6
 rDat$distLoc[which(rDat$distLoc==0)] = 6
-cbPalette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
 # get circle locations - use twice as many to include ALL
 # potential distracter locations
@@ -135,10 +132,10 @@ dat$pathLength = dat$pathLength/256
 dat$lengthOK = as.factor(abs(dat$pathLength - 1) < 0.2)
 
 #  classify trial
-dat$type = 'none'
+dat$type = 'error'
 dat$type[as.logical(dat$lengthOK) & (dat$lookedAtTarg==TRUE)] = "direct"
-dat$type[dat$pathLength>1.2] = "tooLong"
-dat$type[dat$lookedAtDist==TRUE] = "fixatedDistracter"
+# dat$type[dat$pathLength>1.2] = "tooLong"
+# dat$type[dat$lookedAtDist==TRUE] = "fixatedDistracter"
 
 dat$type = as.factor(dat$type)
 
@@ -151,6 +148,7 @@ plt = ggplot(filter(dat, distracter==1), aes(x=type, fill=thoughtNoAttCap)) + ge
 plt = plt + theme_bw() + scale_y_continuous(name="number of trials") + scale_x_discrete(name=" ")
 plt = plt + theme(legend.position="top") + scale_fill_discrete(name="responded that the trial was:")
 plt = plt + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+plt = plt + scale_fill_brewer(type="seq", palette=3, name="response", direction=-1)
 ggsave("../graphs/capturedAndThoughtA.pdf", width=10, height=5)
 ggsave("../graphs/capturedAndThoughtA.png", width=10, height=5)
 

@@ -7,24 +7,39 @@ library(ez)
 fDat = read.csv("aoiFixationData.csv")
 rDat = read.csv("responseCapture.csv")
 
-rDat$observer = as.factor(rDat$observer)
 fDat$observer = as.factor(fDat$observer)
-
+rDat$observer = as.factor(rDat$observer)
 # remove incorrect trials, and trials with NA pathlength
 rDat$okTrial = 
 	rDat$targDiscrim==1 &
-	is.finite(rDat$pathLength) &
-	rDat$RT > 0.150 & rDat$RT < 3
+	is.finite(rDat$pathLength)
 
+# take only trials in which observer looked at the distracter
+rDat = filter(rDat, lookedAtDist)
+
+for (ii in 1:nrow(rDat))
+{
+	tr = rDat$trial[ii]
+	ob = rDat$observer[ii]
+	trialFix = filter(fDat, observer==ob, trial==tr)
+	distFix = filter(trialFix, aoi2=="distracter")
+	rDat$distDwell[ii] = sum(distFix$dur)/1000
+}
+
+#  take only trials with a correct response
 aggregate(okTrial ~ observer, rDat, "mean")
-
 dat = filter(rDat, okTrial==1)
+# take only relevant columns
+dat = select(dat, observer, congC, thought, distDwell, congC, RT)
+dat = droplevels(dat)
 
+# look at RT distribution
+plt = ggplot(dat, aes(x=(RT-distDwell))) + geom_histogram()
+plt
 
-# m = lmer(data=filter(dat, captured=="fixated distracter", congC!="no distracter"), 
-# 	RT ~ congC * thought + (congC * thought|observer), 
-# 	control=lmerControl(optimizer="bobyqa"))
-# ci95 = confint(m, method="boot")
+m = lmer(data=dat,	(RT-distDwell) ~ congC * thought + (congC*thought|observer), 
+	control=lmerControl(optimizer="bobyqa"))
+ci95 = confint(m, method="boot")
 
 # mdat = data.frame(effect=c("incongruent C", "incorrectly thought direct", "interaction"),
 # 	estimate=fixef(m)[2:4], 
@@ -44,8 +59,16 @@ adat  = (filter(dat, congC!="no distracter")
 		%>% group_by(observer, thought, captured, congC) 
 		%>% summarise(
 			medianRT=median(RT),
+			minusDistDwell = median(RT-distDwell/1000),
 			nTrials = length(RT)))
 
+adat$condition = paste(adat$congC, adat$thought)
+spss1 = spread(data=select(as.data.frame(adat), observer, condition, medianRT), condition, medianRT)
+spss2 = spread(data=select(as.data.frame(adat), observer, condition, minusDistDwell), condition, minusDistDwell)
+
+
+write.csv(spss1, "outputForSPSS1.txt", row.names=F)
+write.csv(spss2, "outputForSPSS2.txt", row.names=F)
 
 plt = ggplot(adat, aes(x=observer, y=nTrials, fill=congC))+geom_bar(stat="identity", position=position_dodge())
 plt = plt + facet_grid(captured~thought)

@@ -2,19 +2,19 @@ library(ggplot2)
 library(colorspace)
 library(dplyr)
 options(digits=3)
+
 fDat = read.csv("fixations.csv")
 rDat = read.csv("responses.csv")
+
 fDat$observer = as.factor(fDat$observer)
 rDat$observer = as.factor(rDat$observer)
 rDat$pathLength = 0
 rDat$nFix = 0
 
-
 rDat$congC = as.numeric(rDat$tc == rDat$dc)
 rDat$congC[which(rDat$dc==0)] = 2
 rDat$congC = as.factor(rDat$congC)
 levels(rDat$congC) = c('incongruent', 'congruent', 'no distracter')
-
 
 rDat$distLocO = rDat$distLoc
 rDat$distLoc = (rDat$distLoc + (rDat$targLoc-1)) %% 6

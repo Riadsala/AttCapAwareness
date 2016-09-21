@@ -43,7 +43,9 @@ adat  = (rDist
 
 write.csv( adat, "distracterDwellTimes.txt", row.names=FALSE)
 
-plt = ggplot(adat, aes(x=thought, y=medianDwell)) + geom_boxplot()
-plt = plt + facet_grid(.~congC)
+plt = ggplot(rDist , aes(x=log(distDwell), fill=thought)) + geom_density(alpha=0.5)
+plt = plt + scale_x_continuous("log(distracter dwell time (ms))", expand=c(0,0))
+plt = plt + scale_y_continuous(expand=c(0,0.01))
+plt = plt + theme_bw() + theme(legend.justification=c(1,1), legend.position=c(1,1))
 
-ggsave("dwellTime.pdf")
+ggsave("../plots/dwellTime.pdf")

@@ -20,7 +20,6 @@ for (tr in 1:nrow(rDat))
 rDat$lookedAtTarg = as.logical(rDat$lookedAtTarg)
 rDat$lookedAtDist = as.logical(rDat$lookedAtDist)
 
-
 rTarg = filter(rDat, lookedAtTarg)
 
 for (ii in 1:nrow(rTarg))

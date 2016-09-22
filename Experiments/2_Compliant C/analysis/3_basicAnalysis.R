@@ -3,24 +3,10 @@ library(dplyr)
 library(colorspace)
 options(digits=3)
 
-
-# get author data
-fDatA = read.csv("../authorsData/fixations.csv")
-fDatA$observer = factor(fDatA$observer, labels=c('A', 'B'))
-fDatA$observer = as.character(fDatA$observer)
-rDatA = read.csv("../authorsData/responses.csv")
-rDatA$observer = factor(rDatA$observer, labels=c('A', 'B'))
-rDatA$observer = as.character(rDatA$observer)
-
-fDatB = read.csv("fixations.csv")
-rDatB = read.csv("responses.csv")
-fDatB$observer = factor(fDatB$observer, labels=c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"))
-rDatB$observer = factor(rDatB$observer, labels=c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"))
-
-fDat = rbind(fDatA, fDatB)
-rDat = rbind(rDatA, rDatB)
-fDat$observer = as.factor(fDat$observer)
-rDat$observer = as.factor(rDat$observer)
+fDat = read.csv("fixations.csv")
+rDat = read.csv("responses.csv")
+fDat$observer = factor(fDat$observer)
+rDat$observer = factor(rDat$observer)
 
 rDat$pathLength = 0
 
@@ -56,11 +42,12 @@ dC[which(dC>100^2)] = NaN
 # code up AOIs for fixations
 for (f in 1:nrow(fDat))
 {
+	print(f)
 	if (sum(is.finite(dC[f,]))>0)
 	{
 		fDat$aoi[f] = circLabels[which(dC[f,]== min(dC[f,], na.rm=T))]
 	}
-	else
+	else 
 	{
 		fDat$aoi[f] = 0
 	}
@@ -68,20 +55,22 @@ for (f in 1:nrow(fDat))
 	tr = fDat$trial[f]
 	obs = fDat$observer[f]
 	trialDat = filter(rDat, trial==tr, observer==obs)
-	target = trialDat$targLoc
-	distracter = trialDat$distLoc
-	if (fDat$aoi[f] == "c")
-	{
-		fDat$aoi2[f] = "centre"
-	} else if (fDat$aoi[f] == as.character(target))
-	{
-		fDat$aoi2[f] = "target"
-	} else if (fDat$aoi[f] == as.character(paste("d", distracter, sep="")))
-	{
-		fDat$aoi2[f] = "distracter"
-	} else {
-		fDat$aoi2[f] = "blank"
-	}
+	if (nrow(trialDat)>0)
+	{	
+		target = trialDat$targLoc
+		distracter = trialDat$distLoc
+		if (fDat$aoi[f] == "c")
+		{
+			fDat$aoi2[f] = "centre"
+		} else if (fDat$aoi[f] == as.character(target))
+		{
+			fDat$aoi2[f] = "target"
+		} else if (fDat$aoi[f] == as.character(paste("d", distracter, sep="")))
+		{
+			fDat$aoi2[f] = "distracter"
+		} else {
+			fDat$aoi2[f] = "blank"
+		}}
 }
 fDat$aoi = as.factor(fDat$aoi)
 fDat$aoi2 = as.factor(fDat$aoi2)
@@ -144,7 +133,7 @@ levels(dat$thoughtNoAttCap) = c("bad", "good")
 levels(dat$observer) = c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "A", "B")
 
 # plot basic results for distracter trials. 
-plt = ggplot(filter(dat, distracter), aes(x=type, fill=thoughtNoAttCap)) + geom_bar(stat="count") + facet_grid(~observer)
+plt = ggplot(filter(dat, distracter==1), aes(x=type, fill=thoughtNoAttCap)) + geom_bar(stat="count") + facet_grid(~observer)
 plt = plt + theme_bw() + scale_y_continuous(name="number of trials") + scale_x_discrete(name=" ")
 plt = plt + theme(legend.position="top") + scale_fill_discrete(name="responded that the trial was:")
 plt = plt + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
@@ -152,9 +141,11 @@ plt = plt + scale_fill_brewer(type="seq", palette=3, name="response", direction=
 ggsave("../graphs/capturedAndThoughtA.pdf", width=10, height=4)
 ggsave("../graphs/capturedAndThoughtA.png", width=10, height=4)
 
+aggregate(data=rDat, targDiscrim ~ observer, FUN=mean)
+
+
 # calculate prec and recall for each person
-dat_pr = data.frame(person=character(), stat=factor(levels=c('accuracy', 'precision', 'rec', "F1")), val=numeric())
-dat_error_recall =data.frame(person=character(), errorRate=numeric(), recall=numeric())
+dat_pr = data.frame(person=character(), stat=factor(levels=c('accuracy', 'precision', 'rec')), val=numeric())
 
 for (person in levels(dat$observer))
 {
@@ -167,19 +158,10 @@ for (person in levels(dat$observer))
 	dat_pr = rbind(dat_pr, data.frame(person=person, stat="recall", val=recall))
 	dat_pr = rbind(dat_pr, data.frame(person=person, stat="F1", val=2*prec*recall/(prec+recall)))
 	dat_pr= rbind(dat_pr, data.frame(person=person, stat="accuracy", val=acc))
-
-	dat_error_recall = rbind(dat_error_recall, data.frame(person=person, errorRate = mean(filter(pdat, distracter==1)$type=="error"), recall=recall))
 }
 
 dat_pr$stat = factor(dat_pr$stat, levels=c('accuracy', 'precision', 'recall', "F1"))
-
 plt = ggplot(dat_pr, aes(x=stat, y=val)) + geom_boxplot(fill="grey")
 plt = plt + theme_bw() + theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position="none")
 ggsave("../graphs/f1score.pdf", height=5, width=5)
 ggsave("../graphs/f1score.png", height=5, width=5)
-
-plt = ggplot(dat_error_recall, aes(x=1-errorRate, y=recall))
-plt = plt + geom_point() #+ geom_smooth(method=lm, colour="black")
-plt = plt + theme_bw() + scale_x_continuous(name="proportion of distracter trials with direct eye movements")
-ggsave("../graphs/recall_corr.png", height=5, width=5)
-ggsave("../graphs/recall_corr.pdf", height=5, width=5)

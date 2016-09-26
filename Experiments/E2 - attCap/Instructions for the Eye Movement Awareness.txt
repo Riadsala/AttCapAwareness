@@ -1,0 +1,11 @@
+Instructions for the Eye Movement Awareness, Large Scale, Experiment:
+1. Click on the Matlab icon.
+2. Select “Eye Movement (MAIN)” experiment on the drop-down menu at the top of the program.
+3. Click on “Oculomotor Exp” folder.
+4. Click on “Larger Scale Compliant C Attentional Capture” folder.
+5. The actual experiment file is called “Congruent capture exp.m”. Click on it.
+6. Press the green PLAY button.
+7. Enter participant number and click ENTER.
+8. In order to quit the experiment, press CTRL+C, type in CLOSE ALL, press enter, type in CLEAR ALL, press ENTER.
+9. Carry out calibration and validation for the eye link (instructions on the screen).
+10. The output on the eye link screen should read GOOD. If POOR, repeat calibration and validation again. 

@@ -9,11 +9,19 @@ rDat = read.csv("responseCapture.csv")
 
 fDat$observer = as.factor(fDat$observer)
 rDat$observer = as.factor(rDat$observer)
+
 # remove incorrect trials, and trials with NA pathlength
 rDat$okTrial = 
 	rDat$targDiscrim==1 &
 	is.finite(rDat$pathLength)
 
+# first look at no distracter, and congruency RT effects
+	aDat = aggregate(RT~observer+congC, rDat, "median")
+plt = ggplot(rDat, aes(x=congC, y=RT)) + geom_violin(fill="grey", draw_quantiles=c(0.25,0.5,0.75))
+plt = plt + geom_point(data=aDat, aes(y=RT))
+plt = plt + scale_x_discrete(name="distracter")
+plt = plt + theme_bw()
+ggsave("../graphs/congC_RT.png", width=5, height=5)
 # take only trials in which observer looked at the distracter
 rDat = filter(rDat, lookedAtDist)
 

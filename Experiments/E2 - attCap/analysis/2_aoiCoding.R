@@ -7,6 +7,7 @@ fDat = read.csv("fixations.csv")
 rDat = read.csv("responses.csv")
 
 fDat$observer = as.factor(fDat$observer)
+levels(fDat$observer) = c("1", "2", "3", "4", "5", "6")
 rDat$observer = as.factor(rDat$observer)
 rDat$pathLength = 0
 rDat$nFix = 0
@@ -121,7 +122,7 @@ dat = rDat
 rm(rDat)
 
 # remove incorrect trials
-dat = filter(dat, targDiscrim==1)
+
 
 #  normalise path length
 dat$pathLength = dat$pathLength/256
@@ -140,4 +141,4 @@ levels(dat$thoughtNoAttCap) = c("captured", "direct")
 names(dat)[6] = "thought"
 
 write.csv(fDat, "aoiFixationData.csv", row.names=FALSE)
-write.csv(dat, "responseCapture.csv", row.names=FALSE)
+write.csv(dat, "response.csv", row.names=FALSE)

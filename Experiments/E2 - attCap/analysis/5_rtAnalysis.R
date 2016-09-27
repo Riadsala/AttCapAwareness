@@ -38,7 +38,7 @@ for (ii in 1:nrow(rDat))
 aggregate(okTrial ~ observer, rDat, "mean")
 dat = filter(rDat, okTrial==1)
 # take only relevant columns
-dat = select(dat, observer, congC, thought, distDwell, congC, RT)
+dat = select(dat, observer, congC, thought, distDwell, RT)
 dat = droplevels(dat)
 
 # look at RT distribution

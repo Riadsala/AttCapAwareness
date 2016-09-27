@@ -1,3 +1,4 @@
+
 as.numeric.factor <- function(x) {as.numeric(levels(x))[x]}
 
 ProcessASC <- function(asc)
@@ -38,7 +39,7 @@ ProcessASC <- function(asc)
 	return(fixDat)
 } 
 
-people = c(1,2,3,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21)
+people = c("99_1", "99_2", "99_3", "99_4", "99_5", "99_6")
 
 
 options(digits=3)
@@ -48,17 +49,18 @@ for (person in people)
 {
 	print(person)
 
-	dat = read.csv(paste("../results/obs", person, ".txt", sep=""))
+	dat = read.csv(paste("../pilot/obs", person, ".txt", sep=""))
 	rDat = rbind(rDat, dat)
 	rm(dat)
 
-	asc = readLines(paste("../results/attcap", person, ".asc", sep=""))
+	asc = readLines(paste("../pilot/acap", person, ".asc", sep=""))
 	asc = strsplit(asc, "\t")
 	dat = ProcessASC(asc)
 	fDat = rbind(fDat, dat)
 	rm(dat)
 }
 
+rDat$observer = as.factor(rDat$observer)
 # sort out missing targDiscrim data
 rDat$targDiscrim[which(rDat$targDiscrim==-1)] = NaN
 rDat$thoughtNoAttCap[which(rDat$thoughtNoAttCap==-1)]=0
@@ -69,13 +71,13 @@ rDat$distracter[which(rDat$distLoc==0)] = 0
 format(aggregate(data=rDat, thoughtNoAttCap~observer+distracter, FUN=mean),ndigt=3)
 
 # sort out distLoc
-rDat$distLocRel = (rDat$distLoc - (rDat$targLoc-1)) %% 6
+rDat$distLocRel = (as.numeric(rDat$distLoc) - (as.numeric(rDat$targLoc)-1)) %% 6
 rDat$distLocRel[which(rDat$distLoc==0)]=1
 rDat$distLocRel[which(rDat$distLoc==5)]=2
 rDat$distLocRel[which(rDat$distLoc==4)]=3
 rDat$distLocRel[which(rDat$distracter==0)]=0
 
-aggregate(data=rDat, thoughtNoAttCap~observer+distLoc, FUN=mean)
+aggregate(data=rDat, thoughtNoAttCap~observer+distLoc, FUN="mean")
 
 write.csv(fDat, "fixations.csv", row.names=F, quote=F)
 write.csv(rDat, "responses.csv", row.names=F, quote=F)

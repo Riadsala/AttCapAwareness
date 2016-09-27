@@ -62,7 +62,7 @@ ci95 = confint(m, method="boot")
 
 #  remove some outliers - for now, worst 1% of data
 # dat = filter(dat, RT<= quantile(dat$RT, 0.99))
-dat = select(dat, -distracter)
+# dat = select(dat, -distracter)
 adat  = (filter(dat, congC!="no distracter")
 		%>% group_by(observer, thought, captured, congC) 
 		%>% summarise(
@@ -82,7 +82,7 @@ plt = ggplot(adat, aes(x=observer, y=nTrials, fill=congC))+geom_bar(stat="identi
 plt = plt + facet_grid(captured~thought)
 plt = plt + theme_light()
 plt = plt + scale_y_continuous(name="number of trials")
-ggsave("../plots/nTrialsByCondition.pdf", width=8, height=6)
+ggsave("../graphs/nTrialsByCondition.pdf", width=8, height=6)
 
 
 # simple analysis - only take conditions in which we have > minN trials

@@ -1,28 +1,30 @@
 "observer","thought","congC","medianDwell","nTrials"
-1,"captured","congruent",140.5,90
-1,"captured","incongruent",131,78
-1,"direct","congruent",119,27
-1,"direct","incongruent",119,23
+1,"captured","congruent",143,101
+1,"captured","incongruent",132,96
+1,"direct","congruent",119,29
+1,"direct","incongruent",120.5,24
 2,"captured","congruent",135,23
 2,"captured","incongruent",138.5,16
 2,"direct","congruent",124,2
 2,"direct","incongruent",121,5
 2,"direct","no distracter",144,1
 3,"captured","congruent",122.5,14
-3,"captured","incongruent",121,11
+3,"captured","incongruent",131,15
 3,"captured","no distracter",187,3
-3,"direct","congruent",122,3
-3,"direct","incongruent",124.5,8
+3,"direct","congruent",136,5
+3,"direct","incongruent",123.5,10
 3,"direct","no distracter",266,1
-4,"captured","congruent",160,7
+4,"captured","congruent",154,11
+4,"captured","incongruent",239.5,4
+4,"captured","no distracter",195,2
 4,"direct","congruent",160,3
 4,"direct","incongruent",124,6
 4,"direct","no distracter",195,3
 5,"captured","congruent",261,3
-5,"captured","incongruent",301,3
+5,"captured","incongruent",309,7
 5,"direct","congruent",227,8
-5,"direct","incongruent",153,3
-6,"captured","congruent",131,3
-6,"captured","incongruent",138.5,6
+5,"direct","incongruent",200,11
+6,"captured","congruent",149.5,4
+6,"captured","incongruent",153,7
 6,"direct","congruent",152,3
 6,"direct","incongruent",90,1

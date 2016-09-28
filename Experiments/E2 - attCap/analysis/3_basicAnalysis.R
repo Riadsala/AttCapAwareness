@@ -26,12 +26,12 @@ dat$type[as.logical(dat$lengthOK) & (dat$lookedAtTarg==TRUE)] = "direct"
 
 dat$type = as.factor(dat$type)
 
-dat$thoughtNoAttCap = as.factor(dat$thoughtNoAttCap)
-levels(dat$thoughtNoAttCap) = c("bad", "good")
+dat$thought = as.factor(dat$thought)
+levels(dat$thought) = c("bad", "good")
 levels(dat$observer) = c("1", "2", "3", "4", "5", "6")
 
 # plot basic results for distracter trials. 
-plt = ggplot(filter(dat, distracter==1), aes(x=type, fill=thoughtNoAttCap)) + geom_bar(stat="count") + facet_grid(~observer)
+plt = ggplot(filter(dat, distracter==1), aes(x=type, fill=thought)) + geom_bar(stat="count") + facet_grid(~observer)
 plt = plt + theme_bw() + scale_y_continuous(name="number of trials") + scale_x_discrete(name=" ")
 plt = plt + theme(legend.position="top") + scale_fill_discrete(name="responded that the trial was:")
 plt = plt + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
@@ -48,9 +48,9 @@ dat_pr = data.frame(person=character(), stat=factor(levels=c('accuracy', 'precis
 for (person in levels(dat$observer))
 {
 	pdat = dat[which(dat$observer==person),]
-	prec = sum(pdat$type=="error" & pdat$thoughtNoAttCap=="bad")/sum(pdat$thoughtNoAttCap=="bad")
-	recall = sum(pdat$type=="error" & pdat$thoughtNoAttCap=="bad")/sum(pdat$type=="error")
-	acc = mean((pdat$type=="error") == (pdat$thoughtNoAttCap=="bad"))
+	prec = sum(pdat$type=="error" & pdat$thought=="bad")/sum(pdat$thought=="bad")
+	recall = sum(pdat$type=="error" & pdat$thought=="bad")/sum(pdat$type=="error")
+	acc = mean((pdat$type=="error") == (pdat$thought=="bad"))
 	
 	dat_pr = rbind(dat_pr, data.frame(person=person, stat="precision", val=prec))
 	dat_pr = rbind(dat_pr, data.frame(person=person, stat="recall", val=recall))

@@ -5,7 +5,7 @@ library(dplyr)
 library(tidyr)
 library(ez)
 fDat = read.csv("aoiFixationData.csv")
-rDat = read.csv("responseCapture.csv")
+rDat = read.csv("response.csv")
 
 fDat$observer = as.factor(fDat$observer)
 rDat$observer = as.factor(rDat$observer)

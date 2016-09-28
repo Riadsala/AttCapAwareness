@@ -47,14 +47,13 @@ for (n in 1:13)
 dC[which(dC>100^2)] = NaN
 
 # code up AOIs for fixations
+ fDat$aoi2 = "-"
 for (f in 1:nrow(fDat))
 {
 	if (sum(is.finite(dC[f,]))>0)
 	{
 		fDat$aoi[f] = circLabels[which(dC[f,]== min(dC[f,], na.rm=T))]
-	}
-	else
-	{
+	} else {
 		fDat$aoi[f] = 0
 	}
 	# now code into centre/target/distracter/na code
@@ -79,6 +78,7 @@ for (f in 1:nrow(fDat))
 		}
 	}
 }
+
 fDat$aoi = as.factor(fDat$aoi)
 fDat$aoi2 = as.factor(fDat$aoi2)
 
@@ -126,7 +126,7 @@ rm(rDat)
 
 #  normalise path length
 dat$pathLength = dat$pathLength/256
-dat$lengthOK = as.factor(abs(dat$pathLength - 1) < 0.2)
+dat$lengthOK = as.factor(abs(dat$pathLength - 1) < 0.3)
 
 #  classify trial
 dat$captured = 'none'
@@ -139,6 +139,19 @@ dat$captured = as.factor(dat$captured)
 dat$thoughtNoAttCap = as.factor(dat$thoughtNoAttCap)
 levels(dat$thoughtNoAttCap) = c("captured", "direct")
 names(dat)[6] = "thought"
+
+
+for (tr in 1:2)
+ {
+ 	tfDat = fDat[which(fDat$trial==dat$trial[tr] & fDat$observer==dat$observer[tr]),]
+
+
+	plt = ggplot() + geom_path(data=tfDat, aes(x=x, y=y))+ geom_text(data=tfDat, aes(x=x, y=y, label=aoi2))#
+	plt = plt + geom_text(aes(x=cDat$y,y=cDat$x, label=cDat$n))
+	ggsave(paste("trial", tr, ".png", sep=""))
+
+ }
+
 
 write.csv(fDat, "aoiFixationData.csv", row.names=FALSE)
 write.csv(dat, "response.csv", row.names=FALSE)

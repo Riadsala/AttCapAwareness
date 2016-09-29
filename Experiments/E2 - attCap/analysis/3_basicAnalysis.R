@@ -19,35 +19,42 @@ ggsave("../graphs/accPlot.pdf", height=5, width=5)
 
 
 #  classify trial
-dat$type = 'error'
-dat$type[as.logical(dat$lengthOK) & (dat$lookedAtTarg==TRUE)] = "direct"
-# dat$type[dat$pathLength>1.2] = "tooLong"
-# dat$type[dat$lookedAtDist==TRUE] = "fixatedDistracter"
+rDat$type = 'error'
+rDat$type[as.logical(rDat$lengthOK) & (rDat$lookedAtTarg==TRUE)] = "direct"
+# rDat$type[rDat$pathLength>1.2] = "tooLong"
+# rDat$type[rDat$lookedAtDist==TRUE] = "fixatedDistracter"
 
-dat$type = as.factor(dat$type)
+rDat$type = as.factor(rDat$type)
 
-dat$thought = as.factor(dat$thought)
-levels(dat$thought) = c("bad", "good")
-levels(dat$observer) = c("1", "2", "3", "4", "5", "6")
+rDat$thought = as.factor(rDat$thought)
+levels(rDat$thought) = c("bad", "good")
+levels(rDat$observer) = c("1", "2", "3", "4", "5", "6")
 
 # plot basic results for distracter trials. 
-plt = ggplot(filter(dat, distracter==1), aes(x=type, fill=thought)) + geom_bar(stat="count") + facet_grid(~observer)
+plt = ggplot(filter(rDat, distracter==1), aes(x=type, fill=thought)) + geom_bar(stat="count") + facet_grid(~observer)
 plt = plt + theme_bw() + scale_y_continuous(name="number of trials") + scale_x_discrete(name=" ")
 plt = plt + theme(legend.position="top") + scale_fill_discrete(name="responded that the trial was:")
 plt = plt + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 plt = plt + scale_fill_brewer(type="seq", palette=3, name="response", direction=-1)
-ggsave("../graphs/capturedAndThoughtA.pdf", width=10, height=4)
-ggsave("../graphs/capturedAndThoughtA.png", width=10, height=4)
+ggsave("../graphs/capturedAndThoughtDistracter.pdf", width=10, height=4)
+ggsave("../graphs/capturedAndThoughtDistracter.png", width=10, height=4)
 
-
+# plot basic results for distracter trials. 
+plt = ggplot(filter(rDat, distracter==0), aes(x=type, fill=thought)) + geom_bar(stat="count") + facet_grid(~observer)
+plt = plt + theme_bw() + scale_y_continuous(name="number of trials") + scale_x_discrete(name=" ")
+plt = plt + theme(legend.position="top") + scale_fill_discrete(name="responded that the trial was:")
+plt = plt + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+plt = plt + scale_fill_brewer(type="seq", palette=3, name="response", direction=-1)
+ggsave("../graphs/capturedAndThoughtNoDistracter.pdf", width=10, height=4)
+ggsave("../graphs/capturedAndThoughtNoDistracter.png", width=10, height=4)
 
 
 # calculate prec and recall for each person
 dat_pr = data.frame(person=character(), stat=factor(levels=c('accuracy', 'precision', 'rec')), val=numeric())
 
-for (person in levels(dat$observer))
+for (person in levels(rDat$observer))
 {
-	pdat = dat[which(dat$observer==person),]
+	pdat = rDat[which(rDat$observer==person),]
 	prec = sum(pdat$type=="error" & pdat$thought=="bad")/sum(pdat$thought=="bad")
 	recall = sum(pdat$type=="error" & pdat$thought=="bad")/sum(pdat$type=="error")
 	acc = mean((pdat$type=="error") == (pdat$thought=="bad"))
@@ -61,5 +68,6 @@ for (person in levels(dat$observer))
 dat_pr$stat = factor(dat_pr$stat, levels=c('accuracy', 'precision', 'recall', "F1"))
 plt = ggplot(dat_pr, aes(x=stat, y=val)) + geom_boxplot(fill="grey")
 plt = plt + theme_bw() + theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position="none")
+plt = plt + scale_y_continuous(limits=c(0,1))
 ggsave("../graphs/f1score.pdf", height=5, width=5)
 ggsave("../graphs/f1score.png", height=5, width=5)

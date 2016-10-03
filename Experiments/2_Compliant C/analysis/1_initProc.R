@@ -1,3 +1,5 @@
+library(dplyr)
+
 as.numeric.factor <- function(x) {as.numeric(levels(x))[x]}
 
 ProcessASC <- function(asc)
@@ -6,27 +8,41 @@ ProcessASC <- function(asc)
 
 	trialStarts = grep("TRIAL_START[0-9]*", asc)
 	trialEnds   = grep("STIM_OFF[0-9]*", asc)
+	# trialEnds   = grep("TRIAL_END[0-9]*", asc)
 	nTrials = length(trialStarts)
-
+	print(nTrials)
 	for (t in 1:nTrials)
 	{
 		if (is.finite(trialEnds[t]))
 		{	
-			trial = asc[trialStarts[t]:trialEnds[t]]
+			# add 2 to trialEnd[t] to allow for fixations that 
+			# ended after stim_off
+			trial = asc[trialStarts[t]:(trialEnds[t]+2)]
 			fixationLines = grep("EFIX", trial)
 			
+			stimOffLine = trial[grep("STIM_OFF", trial)]
+			stimOffTime = as.numeric(strsplit(unlist(stimOffLine)[2], " ")[[1]][1])
 			if (length(fixationLines)>0)
 			{
 				fixations = as.data.frame(matrix(unlist(trial[fixationLines]), byrow=T, ncol=6))
-
+				
+				#  get onset times (annoying)
+				idx =grep("[0-9]+", unlist(strsplit(as.character(fixations$V1), " ")))
+				onsetTimes = as.numeric(unlist(strsplit(as.character(fixations$V1), " "))[idx])
+				print(t)
 				trialDat = data.frame(
 					observer=person, 
 					trial=t, 
-					x=as.numeric.factor(fixations$V4), y=as.numeric.factor(fixations$V5), dur=as.numeric.factor(fixations$V3), onset=as.numeric.factor(fixations$V2))
-
+					x=as.numeric.factor(fixations$V4), 
+					y=as.numeric.factor(fixations$V5), 
+					dur=as.numeric.factor(fixations$V3),
+					onset = onsetTimes, 
+					offset=as.numeric.factor(fixations$V2))
+						
 				# convert to stimulus coordinates				 		
-				 trialDat$n = 1:length(trialDat$x)
-			
+				trialDat$n = 1:length(trialDat$x)
+				# remove fixations with onset post stim_off
+				trialDat = filter(trialDat, onset<stimOffTime)
 			    # set onset times relative to first fixations
 				trialDat$onset = trialDat$onset - trialDat$onset[1] 
 
@@ -37,6 +53,7 @@ ProcessASC <- function(asc)
 	}
 	return(fixDat)
 } 
+ 
 
 people = c(1,2,3,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21)
 

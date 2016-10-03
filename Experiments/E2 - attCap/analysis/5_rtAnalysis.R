@@ -45,7 +45,7 @@ dat = droplevels(dat)
 plt = ggplot(dat, aes(x=(RT-distDwell))) + geom_histogram()
 plt
 
-m = lmer(data=dat,	(RT-distDwell) ~ congC * thought + (congC*thought|observer), 
+m = lmer(data=dat,	(RT-distDwell) ~ congC * thought + (1|observer), 
 	control=lmerControl(optimizer="bobyqa"))
 ci95 = confint(m, method="boot")
 

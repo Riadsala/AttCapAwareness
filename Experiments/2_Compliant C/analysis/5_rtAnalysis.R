@@ -49,16 +49,16 @@ m = lmer(data=dat,	(RT-distDwell) ~ congC * thought + (congC*thought|observer),
 	control=lmerControl(optimizer="bobyqa"))
 ci95 = confint(m, method="boot")
 
-# mdat = data.frame(effect=c("incongruent C", "incorrectly thought direct", "interaction"),
-# 	estimate=fixef(m)[2:4], 
-# 	lower=c(ci95["congCincongruent",1],ci95["thoughtdirect",1], ci95["congCincongruent:thoughtdirect",1]),
-# 	upper=c(ci95["congCincongruent",2],ci95["thoughtdirect",2], ci95["congCincongruent:thoughtdirect",2]))
+mdat = data.frame(effect=c("incongruent C", "incorrectly thought direct", "interaction"),
+	estimate=fixef(m)[2:4], 
+	lower=c(ci95["congCincongruent",1],ci95["thoughtdirect",1], ci95["congCincongruent:thoughtdirect",1]),
+	upper=c(ci95["congCincongruent",2],ci95["thoughtdirect",2], ci95["congCincongruent:thoughtdirect",2]))
 
-# mplt = ggplot(mdat, aes(x=effect, y=estimate, ymin=lower, ymax=upper))
-# mplt = mplt + geom_point() + geom_errorbar()
-# mplt = mplt + theme_bw()
-# mplt = mplt +scale_y_continuous(name="estimate effect on RT (seconds)")
-# ggsave("../plots/modelFit.pdf")
+mplt = ggplot(mdat, aes(x=effect, y=estimate, ymin=lower, ymax=upper))
+mplt = mplt + geom_point() + geom_errorbar()
+mplt = mplt + theme_bw()
+mplt = mplt +scale_y_continuous(name="estimate effect on RT (seconds)")
+ggsave("../graphs/modelFit.pdf")
 
 #  remove some outliers - for now, worst 1% of data
 # dat = filter(dat, RT<= quantile(dat$RT, 0.99))

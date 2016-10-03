@@ -42,7 +42,6 @@ dC[which(dC>100^2)] = NaN
 # code up AOIs for fixations
 for (f in 1:nrow(fDat))
 {
-	print(f)
 	if (sum(is.finite(dC[f,]))>0)
 	{
 		fDat$aoi[f] = circLabels[which(dC[f,]== min(dC[f,], na.rm=T))]

@@ -103,8 +103,6 @@ for (tr in 1:nrow(rDat))
 	}
 }
 
-
-
 # determine if trial included fixation to target or distracter
 for (tr in 1:nrow(rDat))
 {
@@ -116,28 +114,24 @@ for (tr in 1:nrow(rDat))
 rDat$lookedAtTarg = as.logical(rDat$lookedAtTarg)
 rDat$lookedAtDist = as.logical(rDat$lookedAtDist)
 
-
 dat = rDat
 rm(rDat)
-
-# remove incorrect trials
-dat = filter(dat, targDiscrim==1)
 
 #  normalise path length
 dat$pathLength = dat$pathLength/256
 dat$lengthOK = as.factor(abs(dat$pathLength - 1) < 0.2)
 
 #  classify trial
-dat$captured = 'none'
-dat$captured[as.logical(dat$lengthOK) & (dat$lookedAtTarg==TRUE)] = "direct"
-dat$captured[dat$pathLength>1.2] = "too long"
-dat$captured[dat$lookedAtDist==TRUE] = "fixated distracter"
+dat$type = 'error'
+dat$type[as.logical(dat$lengthOK) & (dat$lookedAtTarg==TRUE)] = "direct"
+dat$type = as.factor(dat$type)
 
-dat$captured = as.factor(dat$captured)
+
 
 dat$thoughtNoAttCap = as.factor(dat$thoughtNoAttCap)
 levels(dat$thoughtNoAttCap) = c("captured", "direct")
 names(dat)[6] = "thought"
+
 
 write.csv(fDat, "aoiFixationData.csv", row.names=FALSE)
 write.csv(dat, "responseCapture.csv", row.names=FALSE)

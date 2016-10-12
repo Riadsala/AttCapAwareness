@@ -82,15 +82,15 @@ rDat$lookedAtTarg = as.factor(rDat$lookedAtTarg)
 rDat$lookedAtDist = as.factor(rDat$lookedAtDist)
 
 
-for (tr in 1:30)#nrow(rDat)
-{
-	tfDat = fDat[which(fDat$trial==rDat$trial[tr] & fDat$observer==rDat$observer[tr]),]
- 	cDat$target = 0
- 	cDat$target[which(cDat$n==rDat$targLoc[tr])] = 1
- 	cDat$target[which(cDat$n==paste("d",rDat$distLoc[tr], sep=""))] = 1
- 	cDat$target = as.factor(cDat$target)
-	plt = ggplot() + geom_path(data=tfDat, aes(x=x, y=y)) + geom_text(data=tfDat, aes(x=x, y=y, label=aoi2))#
-	plt = plt + geom_text(aes(x=cDat$y,y=cDat$x, label=cDat$n, colour=cDat$target))
-	ggsave(paste("trial", tr, ".png", sep=""))
+# for (tr in 1:30)#nrow(rDat)
+# {
+# 	tfDat = fDat[which(fDat$trial==rDat$trial[tr] & fDat$observer==rDat$observer[tr]),]
+#  	cDat$target = 0
+#  	cDat$target[which(cDat$n==rDat$targLoc[tr])] = 1
+#  	cDat$target[which(cDat$n==paste("d",rDat$distLoc[tr], sep=""))] = 1
+#  	cDat$target = as.factor(cDat$target)
+# 	plt = ggplot() + geom_path(data=tfDat, aes(x=x, y=y)) + geom_text(data=tfDat, aes(x=x, y=y, label=aoi2))#
+# 	plt = plt + geom_text(aes(x=cDat$y,y=cDat$x, label=cDat$n, colour=cDat$target))
+# 	ggsave(paste("trial", tr, ".png", sep=""))
 
-}
+# }

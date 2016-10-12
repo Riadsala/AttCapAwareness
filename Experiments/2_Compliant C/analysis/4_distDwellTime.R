@@ -1,14 +1,21 @@
 library(ggplot2)
 library(dplyr)
-
+library(scales)
 
 fDat = read.csv("aoiFixationData.csv")
 rDat = read.csv("responseCapture.csv")
 
+# look at accuracy before removing incorrect trials
+accDat = aggregate(targDiscrim ~ observer + congC, rDat, "mean")
+print(aggregate(targDiscrim~congC, accDat, "mean"))
+print(aggregate(targDiscrim~observer, accDat, "mean"))
+# get outlier person 
+pAccDat = aggregate(targDiscrim~observer, accDat, "mean")
+rDat = filter(rDat, observer!=pAccDat$observer[pAccDat$targDiscrim<0.8])
+fDat = filter(fDat, observer!=pAccDat$observer[pAccDat$targDiscrim<0.8])
 
 rDat$lookedAtTarg = FALSE
 rDat$lookedAtDist = FALSE
-
 
 # determine if trial included fixation to target or distracter
 for (tr in 1:nrow(rDat))
@@ -21,7 +28,6 @@ for (tr in 1:nrow(rDat))
 rDat$lookedAtTarg = as.logical(rDat$lookedAtTarg)
 rDat$lookedAtDist = as.logical(rDat$lookedAtDist)
 
-
 rDist = filter(rDat, lookedAtDist)
 
 for (ii in 1:nrow(rDist))
@@ -33,8 +39,6 @@ for (ii in 1:nrow(rDist))
 	rDist$distDwell[ii] = sum(distFix$dur)
 }
 
-
-
 adat  = (rDist
 		%>% group_by(observer, thought, congC) 
 		%>% summarise(
@@ -43,9 +47,12 @@ adat  = (rDist
 
 write.csv( adat, "distracterDwellTimes.txt", row.names=FALSE)
 
-plt = ggplot(rDist , aes(x=log(distDwell), fill=thought)) + geom_density(alpha=0.5)
-plt = plt + scale_x_continuous("log(distracter dwell time (ms))", expand=c(0,0))
+plt = ggplot(rDist , aes(x=distDwell, fill=thought)) + geom_density(alpha=0.5)
+plt = plt + scale_x_continuous("log(distracter dwell time (ms))", expand=c(0,0), trans=log2_trans(), breaks=c(12.5, 25, 50,100, 150, 200, 300,400, 500))
 plt = plt + scale_y_continuous(expand=c(0,0.01))
-plt = plt + theme_bw() + theme(legend.justification=c(1,1), legend.position=c(1,1))
+plt = plt + theme_bw() 
+plt = plt + scale_fill_brewer(palette=3, name="response", direction=-1)
 
+ plt = plt + coord_trans(x="log2")
+plt
 ggsave("../graphs/dwellTime.pdf")

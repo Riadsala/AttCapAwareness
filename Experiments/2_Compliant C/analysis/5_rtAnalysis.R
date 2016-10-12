@@ -1,9 +1,8 @@
 library(ggplot2)
-library(lme4)
-library(car)
 library(dplyr)
 library(tidyr)
-library(ez)
+library(brms)
+
 fDat = read.csv("aoiFixationData.csv")
 rDat = read.csv("responseCapture.csv")
 
@@ -15,23 +14,35 @@ rDat$okTrial =
 	rDat$targDiscrim==1 &
 	is.finite(rDat$pathLength)
 
-# first look at no distracter, and congruency RT effects
-	aDat = aggregate(RT~observer+congC, rDat, "median")
-plt = ggplot(rDat, aes(x=congC, y=RT)) + geom_violin(fill="grey", draw_quantiles=c(0.25,0.5,0.75))
-plt = plt + geom_point(data=aDat, aes(y=RT))
-plt = plt + scale_x_discrete(name="distracter")
-plt = plt + theme_bw()
-ggsave("../graphs/congC_RT.png", width=5, height=5)
+# reorder factor levels
+rDat$congC = factor(rDat$congC, levels=levels(rDat$congC)[c(3,1,2)])	
+
+# change RT to ms
+rDat$RT = 1000 * rDat$RT
+
+# # first look at no distracter, and congruency RT effects
+# aDat = aggregate(RT~observer+congC, rDat, "median")
+# plt = ggplot(rDat, aes(x=congC, y=RT)) + geom_violin(fill="#79D0E1", draw_quantiles=c(0.25,0.5,0.75), size=0.75)
+# plt = plt + geom_point(data=aDat, aes(y=RT), colour="#9A4330", size=0.5)
+# plt = plt + geom_path(data=aDat, aes(x=congC, y=RT, group=observer), colour="#9A4330", size=0.25)
+# plt = plt + scale_x_discrete(name="distracter congruency")
+# plt = plt + scale_y_continuous(name="reaction time (ms)")
+# plt = plt + theme_bw()
+# plt
+# ggsave("../graphs/congC_RT.png", width=5, height=5)
+# ggsave("../graphs/congC_RT.pdf", width=5, height=5)
+
 # take only trials in which observer looked at the distracter
 rDat = filter(rDat, lookedAtDist)
 
+# calculate dwell time
 for (ii in 1:nrow(rDat))
 {
 	tr = rDat$trial[ii]
 	ob = rDat$observer[ii]
 	trialFix = filter(fDat, observer==ob, trial==tr)
 	distFix = filter(trialFix, aoi2=="distracter")
-	rDat$distDwell[ii] = sum(distFix$dur)/1000
+	rDat$distDwell[ii] = sum(distFix$dur)
 }
 
 #  take only trials with a correct response
@@ -40,6 +51,22 @@ dat = filter(rDat, okTrial==1)
 # take only relevant columns
 dat = select(dat, observer, congC, thought, distDwell, congC, RT)
 dat = droplevels(dat)
+
+# verify there is a congruency effect
+m = brm(data=dat, 
+	RT ~ congC + (congC|observer),
+	family="lognormal")
+
+# is the congruency effect modulated by awareness?
+m = brm(data=dat, 
+	RT-distDwell ~ congC*thought + (congC*thought|observer),
+	family="normal",
+	control = list(adapt_delta = 0.90))
+
+m = brm(data=dat, 
+	as.numeric(thought) ~ congC*RT*distDwell + (congC*thought|observer),
+	family="binomial")
+
 
 # look at RT distribution
 plt = ggplot(dat, aes(x=(RT-distDwell))) + geom_histogram()

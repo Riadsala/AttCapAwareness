@@ -1,7 +1,8 @@
 library(ggplot2)
 library(dplyr)
 library(tidyr)
-library(brms)
+library(scales)
+# library(brms)
 
 fDat = read.csv("aoiFixationData.csv")
 rDat = read.csv("responseCapture.csv")
@@ -9,68 +10,77 @@ rDat = read.csv("responseCapture.csv")
 fDat$observer = as.factor(fDat$observer)
 rDat$observer = as.factor(rDat$observer)
 
-# remove incorrect trials, and trials with NA pathlength
-rDat$okTrial = 
-	rDat$targDiscrim==1 &
-	is.finite(rDat$pathLength)
 
-# reorder factor levels
-rDat$congC = factor(rDat$congC, levels=levels(rDat$congC)[c(3,1,2)])	
+source("removeBadTrials.R")
+rDat = removeBadTrials(rDat)
 
-# change RT to ms
-rDat$RT = 1000 * rDat$RT
-
-# # first look at no distracter, and congruency RT effects
-# aDat = aggregate(RT~observer+congC, rDat, "median")
-# plt = ggplot(rDat, aes(x=congC, y=RT)) + geom_violin(fill="#79D0E1", draw_quantiles=c(0.25,0.5,0.75), size=0.75)
-# plt = plt + geom_point(data=aDat, aes(y=RT), colour="#9A4330", size=0.5)
-# plt = plt + geom_path(data=aDat, aes(x=congC, y=RT, group=observer), colour="#9A4330", size=0.25)
-# plt = plt + scale_x_discrete(name="distracter congruency")
-# plt = plt + scale_y_continuous(name="reaction time (ms)")
-# plt = plt + theme_bw()
-# plt
-# ggsave("../graphs/congC_RT.png", width=5, height=5)
-# ggsave("../graphs/congC_RT.pdf", width=5, height=5)
+# first look at no distracter, and congruency RT effects
+aDat = aggregate(RT~observer+congC, rDat, "median")
+plt = ggplot(rDat, aes(x=congC, y=RT)) + geom_violin(fill="#79D0E1", draw_quantiles=c(0.25,0.5,0.75), size=0.75)
+plt = plt + geom_point(data=aDat, aes(y=RT), colour="#9A4330", size=0.5)
+plt = plt + geom_path(data=aDat, aes(x=congC, y=RT, group=observer), colour="#9A4330", size=0.25)
+plt = plt + scale_x_discrete(name="distracter congruency")
+plt = plt + scale_y_continuous(name="reaction time (ms)")
+plt = plt + theme_bw()
+ggsave("../graphs/congC_RT.png", width=5, height=5)
+ggsave("../graphs/congC_RT.pdf", width=5, height=5)
 
 # take only trials in which observer looked at the distracter
 rDat = filter(rDat, lookedAtDist)
 
-# calculate dwell time
-for (ii in 1:nrow(rDat))
-{
-	tr = rDat$trial[ii]
-	ob = rDat$observer[ii]
-	trialFix = filter(fDat, observer==ob, trial==tr)
-	distFix = filter(trialFix, aoi2=="distracter")
-	rDat$distDwell[ii] = sum(distFix$dur)
-}
+# plot distribution of distract
+plt = ggplot(rDat , aes(x=distDwell, fill=thought)) + geom_density(alpha=0.5)
+plt = plt + scale_x_continuous("log(distracter dwell time (ms))", expand=c(0,0), trans=log2_trans(), breaks=c(12.5, 25, 50,100, 150, 200, 300,400, 500))
+plt = plt + scale_y_continuous(expand=c(0,0.01))
+plt = plt + theme_bw() 
+plt = plt + scale_fill_brewer(palette=3, name="response", direction=-1)
+ plt = plt + coord_trans(x="log2")
+ggsave("../graphs/dwellTime.pdf")
 
-#  take only trials with a correct response
-aggregate(okTrial ~ observer, rDat, "mean")
-dat = filter(rDat, okTrial==1)
+
 # take only relevant columns
-dat = select(dat, observer, congC, thought, distDwell, congC, RT)
-dat = droplevels(dat)
+rDat = select(rDat, observer, congC, thought, distDwell, congC, RT)
+rDat = droplevels(rDat)
 
 # verify there is a congruency effect
-m = brm(data=dat, 
-	RT ~ congC + (congC|observer),
-	family="lognormal")
+library(lme4)
+m = lmer(data=rDat,RT ~ congC + (congC|observer))
+ci = confint(m, method="boot")
+# and vertify using log-transformed RT. 
+mLog = lmer(data=rDat, log(RT) ~ congC + (congC|observer))
+ci = confint(mLog, method="boot")
 
-# is the congruency effect modulated by awareness?
-m = brm(data=dat, 
-	RT-distDwell ~ congC*thought + (congC*thought|observer),
-	family="normal",
-	control = list(adapt_delta = 0.90))
+#  logisitic regression to predict correctly noticing Error
+rDat$aRT = rDat$RT - rDat$distDwell
+rDat$cong2 = -1
+rDat$cong2[rDat$congC=="congruent"] = 1
+m = glmer((thought=="no") ~ cong2 * scale(log(distDwell)) * scale(log(aRT)) 
+	+ (1|observer), 
+	data = rDat,
+	family = "binomial")
+# ci = confint(m, method="boot")
 
-m = brm(data=dat, 
-	as.numeric(thought) ~ congC*RT*distDwell + (congC*thought|observer),
-	family="binomial")
+#  congruency and awareness predicint aRT
+m = lmer(aRT ~ congC * thought + (thought|observer), rDat)
+ci = confint(m, method="boot")
 
 
-# look at RT distribution
-plt = ggplot(dat, aes(x=(RT-distDwell))) + geom_histogram()
-plt
+
+
+# # is the congruency effect modulated by awareness?
+# m = brm(data=dat, 
+# 	RT-distDwell ~ congC*thought + (congC*thought|observer),
+# 	family="normal",
+# 	control = list(adapt_delta = 0.90))
+
+# m = brm(data=dat, 
+# 	as.numeric(thought) ~ congC*RT*distDwell + (congC*thought|observer),
+# 	family="binomial")
+
+
+# # look at RT distribution
+# plt = ggplot(dat, aes(x=(RT-distDwell))) + geom_histogram()
+# plt
 
 m = lmer(data=dat,	(RT-distDwell) ~ congC * thought + (congC*thought|observer), 
 	control=lmerControl(optimizer="bobyqa"))

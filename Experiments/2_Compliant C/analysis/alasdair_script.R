@@ -1,7 +1,9 @@
 require(brms)
 
-dat = read(file="attcap.Rda")
+# dat = read(file="attcap.Rda")
 
+
+dat = rDat
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 theme_set(theme_bw())
@@ -13,7 +15,7 @@ hyp_effect  <- c("b_congCincongruent / (sigma + sd_observer__Intercept) = 0")
 hyp_effect_conserv  <- c("b_congCincongruent / (sigma + sd_observer__Intercept +
                          sd_observer__congCincongruent) = 0")
 m <- brm(RT ~ congC + (congC|observer), family= lognormal(link = "identity"), data = dat)
-
+m <- brm(RT ~ congC + (congC|observer), dat)
 hypothesis(m, hyp_estimate) # estimate 
 tapply(dat$RT, dat$congC, mean) # check to ensure in same direction
 hypothesis(m, hyp_effect, class = NULL ) # effect size (citation if needed)

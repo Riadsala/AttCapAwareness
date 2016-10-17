@@ -110,28 +110,34 @@ for (tr in 1:nrow(rDat))
 	rDat$lookedAtTarg[tr] = sum(tfDat$aoi2 == "target")>0
 	rDat$lookedAtDist[tr] = sum(tfDat$aoi2 == "distracter")>0
 }
-
 rDat$lookedAtTarg = as.logical(rDat$lookedAtTarg)
 rDat$lookedAtDist = as.logical(rDat$lookedAtDist)
 
-dat = rDat
-rm(rDat)
-
 #  normalise path length
-dat$pathLength = dat$pathLength/256
-dat$lengthOK = as.factor(abs(dat$pathLength - 1) < 0.2)
+rDat$pathLength = rDat$pathLength/256
+rDat$lengthOK = as.factor(abs(rDat$pathLength - 1) < 0.2)
 
 #  classify trial
-dat$type = 'error'
-dat$type[as.logical(dat$lengthOK) & (dat$lookedAtTarg==TRUE)] = "direct"
-dat$type = as.factor(dat$type)
+rDat$type = 'error'
+rDat$type[as.logical(rDat$lengthOK) & (rDat$lookedAtTarg==TRUE)] = "direct"
+rDat$type = as.factor(rDat$type)
 
+rDat$thoughtNoAttCap = as.factor(rDat$thoughtNoAttCap)
+levels(rDat$thoughtNoAttCap) = c("no", "yes")
+names(rDat)[6] = "thought"
 
+# reorder factor levels
+rDat$congC = factor(rDat$congC, levels=levels(rDat$congC)[c(3,1,2)])	
 
-dat$thoughtNoAttCap = as.factor(dat$thoughtNoAttCap)
-levels(dat$thoughtNoAttCap) = c("captured", "direct")
-names(dat)[6] = "thought"
-
+# calculate dwell time
+for (ii in 1:nrow(rDat))
+{
+	tr = rDat$trial[ii]
+	ob = rDat$observer[ii]
+	trialFix = filter(fDat, observer==ob, trial==tr)
+	distFix = filter(trialFix, aoi2=="distracter")
+	rDat$distDwell[ii] = sum(distFix$dur)
+}
 
 write.csv(fDat, "aoiFixationData.csv", row.names=FALSE)
-write.csv(dat, "responseCapture.csv", row.names=FALSE)
+write.csv(rDat, "responseCapture.csv", row.names=FALSE)

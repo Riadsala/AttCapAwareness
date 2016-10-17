@@ -32,6 +32,10 @@
 10,"no","incongruent",148,20
 10,"yes","congruent",121,19
 10,"yes","incongruent",110,18
+12,"no","congruent",179,1
+12,"no","incongruent",144,5
+12,"yes","congruent",152.5,102
+12,"yes","incongruent",162.5,96
 13,"no","congruent",183,16
 13,"no","incongruent",241,18
 13,"yes","congruent",104,17

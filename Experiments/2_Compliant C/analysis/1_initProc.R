@@ -94,5 +94,8 @@ rDat$distLocRel[which(rDat$distracter==0)]=0
 
 aggregate(data=rDat, thoughtNoAttCap~observer+distLoc, FUN=mean)
 
+# change RT to ms
+rDat$RT = 1000 * rDat$RT
+
 write.csv(fDat, "fixations.csv", row.names=F, quote=F)
 write.csv(rDat, "responses.csv", row.names=F, quote=F)

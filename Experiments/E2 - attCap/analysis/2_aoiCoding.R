@@ -7,7 +7,6 @@ fDat = read.csv("fixations.csv")
 rDat = read.csv("responses.csv")
 
 fDat$observer = as.factor(fDat$observer)
-levels(fDat$observer) = c("1", "2", "3", "4", "5", "6")
 rDat$observer = as.factor(rDat$observer)
 rDat$pathLength = 0
 rDat$nFix = 0
@@ -47,13 +46,14 @@ for (n in 1:13)
 dC[which(dC>100^2)] = NaN
 
 # code up AOIs for fixations
- fDat$aoi2 = "-"
 for (f in 1:nrow(fDat))
 {
 	if (sum(is.finite(dC[f,]))>0)
 	{
 		fDat$aoi[f] = circLabels[which(dC[f,]== min(dC[f,], na.rm=T))]
-	} else {
+	}
+	else
+	{
 		fDat$aoi[f] = 0
 	}
 	# now code into centre/target/distracter/na code
@@ -78,7 +78,6 @@ for (f in 1:nrow(fDat))
 		}
 	}
 }
-
 fDat$aoi = as.factor(fDat$aoi)
 fDat$aoi2 = as.factor(fDat$aoi2)
 
@@ -104,8 +103,6 @@ for (tr in 1:nrow(rDat))
 	}
 }
 
-
-
 # determine if trial included fixation to target or distracter
 for (tr in 1:nrow(rDat))
 {
@@ -113,45 +110,34 @@ for (tr in 1:nrow(rDat))
 	rDat$lookedAtTarg[tr] = sum(tfDat$aoi2 == "target")>0
 	rDat$lookedAtDist[tr] = sum(tfDat$aoi2 == "distracter")>0
 }
-
 rDat$lookedAtTarg = as.logical(rDat$lookedAtTarg)
 rDat$lookedAtDist = as.logical(rDat$lookedAtDist)
 
-
-dat = rDat
-rm(rDat)
-
-# remove incorrect trials
-
-
 #  normalise path length
-dat$pathLength = dat$pathLength/256
-dat$lengthOK = as.factor(abs(dat$pathLength - 1) < 0.3)
+rDat$pathLength = rDat$pathLength/256
+rDat$lengthOK = as.factor(abs(rDat$pathLength - 1) < 0.2)
 
 #  classify trial
-dat$captured = 'none'
-dat$captured[as.logical(dat$lengthOK) & (dat$lookedAtTarg==TRUE)] = "direct"
-dat$captured[dat$pathLength>1.2] = "too long"
-dat$captured[dat$lookedAtDist==TRUE] = "fixated distracter"
+rDat$type = 'error'
+rDat$type[as.logical(rDat$lengthOK) & (rDat$lookedAtTarg==TRUE)] = "direct"
+rDat$type = as.factor(rDat$type)
 
-dat$captured = as.factor(dat$captured)
+rDat$thoughtNoAttCap = as.factor(rDat$thoughtNoAttCap)
+levels(rDat$thoughtNoAttCap) = c("no", "yes")
+names(rDat)[6] = "thought"
 
-dat$thoughtNoAttCap = as.factor(dat$thoughtNoAttCap)
-levels(dat$thoughtNoAttCap) = c("captured", "direct")
-names(dat)[6] = "thought"
+# reorder factor levels
+rDat$congC = factor(rDat$congC, levels=levels(rDat$congC)[c(3,1,2)])	
 
-
-for (tr in 1:2)
- {
- 	tfDat = fDat[which(fDat$trial==dat$trial[tr] & fDat$observer==dat$observer[tr]),]
-
-
-	plt = ggplot() + geom_path(data=tfDat, aes(x=x, y=y))+ geom_text(data=tfDat, aes(x=x, y=y, label=aoi2))#
-	plt = plt + geom_text(aes(x=cDat$y,y=cDat$x, label=cDat$n))
-	ggsave(paste("trial", tr, ".png", sep=""))
-
- }
-
+# calculate dwell time
+for (ii in 1:nrow(rDat))
+{
+	tr = rDat$trial[ii]
+	ob = rDat$observer[ii]
+	trialFix = filter(fDat, observer==ob, trial==tr)
+	distFix = filter(trialFix, aoi2=="distracter")
+	rDat$distDwell[ii] = sum(distFix$dur)
+}
 
 write.csv(fDat, "aoiFixationData.csv", row.names=FALSE)
-write.csv(dat, "response.csv", row.names=FALSE)
+write.csv(rDat, "responseCapture.csv", row.names=FALSE)

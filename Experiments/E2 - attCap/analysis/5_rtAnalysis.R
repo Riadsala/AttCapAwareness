@@ -1,68 +1,105 @@
 library(ggplot2)
-library(lme4)
-library(car)
 library(dplyr)
 library(tidyr)
-library(ez)
+library(scales)
+# library(brms)
+
 fDat = read.csv("aoiFixationData.csv")
-rDat = read.csv("response.csv")
+rDat = read.csv("responseCapture.csv")
 
 fDat$observer = as.factor(fDat$observer)
 rDat$observer = as.factor(rDat$observer)
 
-# remove incorrect trials, and trials with NA pathlength
-rDat$okTrial = 
-	rDat$targDiscrim==1 &
-	is.finite(rDat$pathLength)
+
+source("removeBadTrials.R")
+rDat = removeBadTrials(rDat)
 
 # first look at no distracter, and congruency RT effects
-	aDat = aggregate(RT~observer+congC, rDat, "median")
-plt = ggplot(rDat, aes(x=congC, y=RT)) + geom_violin(fill="grey", draw_quantiles=c(0.25,0.5,0.75))
-plt = plt + geom_point(data=aDat, aes(y=RT))
-plt = plt + scale_x_discrete(name="distracter")
+aDat = aggregate(RT~observer+congC, rDat, "median")
+plt = ggplot(rDat, aes(x=congC, y=RT)) + geom_violin(fill="#79D0E1", draw_quantiles=c(0.25,0.5,0.75), size=0.75)
+plt = plt + geom_point(data=aDat, aes(y=RT), colour="#9A4330", size=0.5)
+plt = plt + geom_path(data=aDat, aes(x=congC, y=RT, group=observer), colour="#9A4330", size=0.25)
+plt = plt + scale_x_discrete(name="distracter congruency")
+plt = plt + scale_y_continuous(name="reaction time (ms)")
 plt = plt + theme_bw()
 ggsave("../graphs/congC_RT.png", width=5, height=5)
+ggsave("../graphs/congC_RT.pdf", width=5, height=5)
+
 # take only trials in which observer looked at the distracter
 rDat = filter(rDat, lookedAtDist)
 
-for (ii in 1:nrow(rDat))
-{
-	tr = rDat$trial[ii]
-	ob = rDat$observer[ii]
-	trialFix = filter(fDat, observer==ob, trial==tr)
-	distFix = filter(trialFix, aoi2=="distracter")
-	rDat$distDwell[ii] = sum(distFix$dur)/1000
-}
+# plot distribution of distract
+plt = ggplot(rDat , aes(x=distDwell, fill=thought)) + geom_density(alpha=0.5)
+plt = plt + scale_x_continuous("log(distracter dwell time (ms))", expand=c(0,0), trans=log2_trans(), breaks=c(12.5, 25, 50,100, 150, 200, 300,400, 500))
+plt = plt + scale_y_continuous(expand=c(0,0.01))
+plt = plt + theme_bw() 
+plt = plt + scale_fill_brewer(palette=3, name="response", direction=-1)
+ plt = plt + coord_trans(x="log2")
+ggsave("../graphs/dwellTime.pdf")
 
-#  take only trials with a correct response
-aggregate(okTrial ~ observer, rDat, "mean")
-dat = filter(rDat, okTrial==1)
+
 # take only relevant columns
-dat = select(dat, observer, congC, thought, distDwell, RT)
-dat = droplevels(dat)
+rDat = select(rDat, observer, congC, thought, distDwell, congC, RT)
+rDat = droplevels(rDat)
 
-# look at RT distribution
-plt = ggplot(dat, aes(x=(RT-distDwell))) + geom_histogram()
-plt
+# verify there is a congruency effect
+library(lme4)
+m = lmer(data=rDat,RT ~ congC + (congC|observer))
+ci = confint(m, method="boot")
+# and vertify using log-transformed RT. 
+mLog = lmer(data=rDat, log(RT) ~ congC + (congC|observer))
+ci = confint(mLog, method="boot")
 
-m = lmer(data=dat,	(RT-distDwell) ~ congC * thought + (1|observer), 
+#  logisitic regression to predict correctly noticing Error
+rDat$aRT = rDat$RT - rDat$distDwell
+rDat$cong2 = -1
+rDat$cong2[rDat$congC=="congruent"] = 1
+m = glmer((thought=="no") ~ cong2 * scale(log(distDwell)) * scale(log(aRT)) 
+	+ (1|observer), 
+	data = rDat,
+	family = "binomial")
+# ci = confint(m, method="boot")
+
+#  congruency and awareness predicint aRT
+m = lmer(aRT ~ congC * thought + (thought|observer), rDat)
+ci = confint(m, method="boot")
+
+
+
+
+# # is the congruency effect modulated by awareness?
+# m = brm(data=dat, 
+# 	RT-distDwell ~ congC*thought + (congC*thought|observer),
+# 	family="normal",
+# 	control = list(adapt_delta = 0.90))
+
+# m = brm(data=dat, 
+# 	as.numeric(thought) ~ congC*RT*distDwell + (congC*thought|observer),
+# 	family="binomial")
+
+
+# # look at RT distribution
+# plt = ggplot(dat, aes(x=(RT-distDwell))) + geom_histogram()
+# plt
+
+m = lmer(data=dat,	(RT-distDwell) ~ congC * thought + (congC*thought|observer), 
 	control=lmerControl(optimizer="bobyqa"))
 ci95 = confint(m, method="boot")
 
-# mdat = data.frame(effect=c("incongruent C", "incorrectly thought direct", "interaction"),
-# 	estimate=fixef(m)[2:4], 
-# 	lower=c(ci95["congCincongruent",1],ci95["thoughtdirect",1], ci95["congCincongruent:thoughtdirect",1]),
-# 	upper=c(ci95["congCincongruent",2],ci95["thoughtdirect",2], ci95["congCincongruent:thoughtdirect",2]))
+mdat = data.frame(effect=c("incongruent C", "incorrectly thought direct", "interaction"),
+	estimate=fixef(m)[2:4], 
+	lower=c(ci95["congCincongruent",1],ci95["thoughtdirect",1], ci95["congCincongruent:thoughtdirect",1]),
+	upper=c(ci95["congCincongruent",2],ci95["thoughtdirect",2], ci95["congCincongruent:thoughtdirect",2]))
 
-# mplt = ggplot(mdat, aes(x=effect, y=estimate, ymin=lower, ymax=upper))
-# mplt = mplt + geom_point() + geom_errorbar()
-# mplt = mplt + theme_bw()
-# mplt = mplt +scale_y_continuous(name="estimate effect on RT (seconds)")
-# ggsave("../plots/modelFit.pdf")
+mplt = ggplot(mdat, aes(x=effect, y=estimate, ymin=lower, ymax=upper))
+mplt = mplt + geom_point() + geom_errorbar()
+mplt = mplt + theme_bw()
+mplt = mplt +scale_y_continuous(name="estimate effect on RT (seconds)")
+ggsave("../graphs/modelFit.pdf")
 
 #  remove some outliers - for now, worst 1% of data
 # dat = filter(dat, RT<= quantile(dat$RT, 0.99))
-# dat = select(dat, -distracter)
+dat = select(dat, -distracter)
 adat  = (filter(dat, congC!="no distracter")
 		%>% group_by(observer, thought, captured, congC) 
 		%>% summarise(
@@ -82,7 +119,7 @@ plt = ggplot(adat, aes(x=observer, y=nTrials, fill=congC))+geom_bar(stat="identi
 plt = plt + facet_grid(captured~thought)
 plt = plt + theme_light()
 plt = plt + scale_y_continuous(name="number of trials")
-ggsave("../graphs/nTrialsByCondition.pdf", width=8, height=6)
+ggsave("../plots/nTrialsByCondition.pdf", width=8, height=6)
 
 
 # simple analysis - only take conditions in which we have > minN trials

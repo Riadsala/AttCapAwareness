@@ -53,8 +53,15 @@ ProcessASC <- function(asc)
 	return(fixDat)
 } 
 
-people = c("99_1", "99_2", "99_3", "99_4", "99_5", "99_6")
-
+people = as.character()
+for (e in 1:6)
+{
+	for (p in 1:5)
+	{
+		people = c(people, paste(e, "_", p, sep=""))
+	}
+}
+people = people[-15]
 
 options(digits=3)
 rDat = data.frame(observer=numeric(), trial=numeric(), targLoc=numeric(), distLoc=numeric(), targDiscrim=numeric(), thoughtNoAttCap=numeric())
@@ -63,16 +70,17 @@ for (person in people)
 {
 	print(person)
 
-	dat = read.csv(paste("../pilot/obs", person, ".txt", sep=""))
+	dat = read.csv(paste("../data/txt_files/obs", person, ".txt", sep=""))
 	# get count of practise trial
 	if (person !="99_1")
 	{
 		pTrial = dat$trial[20]
 	}
+	dat$observer = person
 	rDat = rbind(rDat, dat)
 	rm(dat)
 
-	asc = readLines(paste("../pilot/acap", person, ".asc", sep=""))
+	asc = readLines(paste("../data//asc_files/acap", person, ".asc", sep=""))
 	asc = strsplit(asc, "\t")
 	dat = ProcessASC(asc)
 	# remove practice trials from observer 2-6

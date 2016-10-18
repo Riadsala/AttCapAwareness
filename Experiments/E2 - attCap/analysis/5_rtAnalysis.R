@@ -10,6 +10,8 @@ rDat = read.csv("responseCapture.csv")
 fDat$observer = as.factor(fDat$observer)
 rDat$observer = as.factor(rDat$observer)
 
+# reorder factor levels
+rDat$congC = factor(rDat$congC, levels=levels(rDat$congC)[c(3,1,2)])	
 
 source("removeBadTrials.R")
 rDat = removeBadTrials(rDat)

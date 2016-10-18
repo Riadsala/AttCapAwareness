@@ -6,7 +6,6 @@ removeBadTrials <- function(rDat)
 	accDat = aggregate(targDiscrim ~ observer + congC, rDat, "mean")
 	print(aggregate(targDiscrim~congC, accDat, "mean"))
 	print(aggregate(targDiscrim~observer, accDat, "mean"))
-	
 	# remove outlier person
 	pAccDat = aggregate(targDiscrim~observer, accDat, "mean")
 	rDat = filter(rDat, observer!=pAccDat$observer[pAccDat$targDiscrim<0.8])

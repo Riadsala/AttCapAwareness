@@ -16,6 +16,7 @@ rDat$congC = factor(rDat$congC, levels=levels(rDat$congC)[c(3,1,2)])
 source("removeBadTrials.R")
 rDat = removeBadTrials(rDat)
 
+
 # first look at no distracter, and congruency RT effects
 aDat = aggregate(RT~observer+congC, rDat, "median")
 plt = ggplot(rDat, aes(x=congC, y=RT)) + geom_violin(fill="#79D0E1", draw_quantiles=c(0.25,0.5,0.75), size=0.75)
@@ -28,9 +29,31 @@ ggsave("../graphs/congC_RT.png", width=5, height=5)
 ggsave("../graphs/congC_RT.pdf", width=5, height=5)
 
 # take only trials in which observer looked at the distracter
-rDat = filter(rDat, lookedAtDist)
+rDat = filter(rDat, lookedAtDist, lookedAtTarg, congC!="no distracter")
 
-# plot distribution of distract
+# output data in wide format for students
+
+adat  = (filter(rDat, congC!="no distracter")
+		%>% group_by(observer, thought, congC) 
+		%>% summarise(
+			medianRT=median(RT),
+			minusDistDwell = median(RT-distDwell/1000),
+			nTrials = length(RT)))
+adat$medianRT[adat$nTrials<11] = NaN
+adat$minusDistDwell[adat$nTrials<11] = NaN
+adat$condition = paste(adat$congC, adat$thought)
+spss1 = spread(data=select(as.data.frame(adat), observer, condition, medianRT), condition, medianRT)
+spss2 = spread(data=select(as.data.frame(adat), observer, condition, minusDistDwell), condition, minusDistDwell)
+
+adat = aggregate(distDwell ~ observer + thought, rDat, "median")
+spss3 = spread(data=as.data.frame(adat),  thought, distDwell)
+
+
+write.csv(spss1, "outputForSPSS1.txt", row.names=F)
+write.csv(spss2, "outputForSPSS2.txt", row.names=F)
+write.csv(spss3, "outputForSPSS3.txt", row.names=F)
+
+# plot distribution of distracter dwell times
 plt = ggplot(rDat , aes(x=distDwell, fill=thought)) + geom_density(alpha=0.5)
 plt = plt + scale_x_continuous("log(distracter dwell time (ms))", expand=c(0,0), trans=log2_trans(), breaks=c(12.5, 25, 50,100, 150, 200, 300,400, 500))
 plt = plt + scale_y_continuous(expand=c(0,0.01))
@@ -43,7 +66,7 @@ ggsave("../graphs/dwellTime.pdf")
 # take only relevant columns
 rDat = select(rDat, observer, congC, thought, distDwell, congC, RT)
 rDat = droplevels(rDat)
-
+rDat$RT = 1000 * rDat$RT
 # verify there is a congruency effect
 library(lme4)
 m = lmer(data=rDat,RT ~ congC + (congC|observer))
@@ -99,23 +122,7 @@ mplt = mplt + theme_bw()
 mplt = mplt +scale_y_continuous(name="estimate effect on RT (seconds)")
 ggsave("../graphs/modelFit.pdf")
 
-#  remove some outliers - for now, worst 1% of data
-# dat = filter(dat, RT<= quantile(dat$RT, 0.99))
-dat = select(dat, -distracter)
-adat  = (filter(dat, congC!="no distracter")
-		%>% group_by(observer, thought, captured, congC) 
-		%>% summarise(
-			medianRT=median(RT),
-			minusDistDwell = median(RT-distDwell/1000),
-			nTrials = length(RT)))
 
-adat$condition = paste(adat$congC, adat$thought)
-spss1 = spread(data=select(as.data.frame(adat), observer, condition, medianRT), condition, medianRT)
-spss2 = spread(data=select(as.data.frame(adat), observer, condition, minusDistDwell), condition, minusDistDwell)
-
-
-write.csv(spss1, "outputForSPSS1.txt", row.names=F)
-write.csv(spss2, "outputForSPSS2.txt", row.names=F)
 
 plt = ggplot(adat, aes(x=observer, y=nTrials, fill=congC))+geom_bar(stat="identity", position=position_dodge())
 plt = plt + facet_grid(captured~thought)
@@ -134,16 +141,6 @@ plt = plt + theme_bw()
 plt = plt + scale_y_continuous(name="median RT")
 ggsave("../plots/MedianRT.pdf", width=8, height=6)
 
-adat = adat[complete.cases(adat),]
-
-
-
-adat$congC = droplevels(adat$congC)
-adat = filter(adat, captured == "fixated distracter")
-adat$captured = droplevels(adat$captured)
-
-adat$condition = paste(adat$congC, adat$thought)
-wideDat =spread(select(ungroup(adat), observer, condition, medianRT), condition, medianRT)
 
 
 

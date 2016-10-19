@@ -30,7 +30,7 @@ cDat = data.frame(n=factor(1:12, labels=circLabels))
 cDat$phi = 2*(as.numeric(cDat$n)+1)*pi/12 
 cDat$x = R * -cos(cDat$phi)
 cDat$y = R * sin(cDat$phi)
-cDat = rbind(cDat, data.frame(n='c', phi=NA, x=0, y=0))
+cDat = rbind(cDat, data.frame(n='c', phi=NA, x=0, y=0) )
 circLabels=cbind(circLabels, 'c')
 
 # first, transform (x,y) to stimuli coordinates

@@ -61,7 +61,7 @@ for (e in 1:6)
 		people = c(people, paste(e, "_", p, sep=""))
 	}
 }
-people = people[-15]
+
 
 options(digits=3)
 rDat = data.frame(observer=numeric(), trial=numeric(), targLoc=numeric(), distLoc=numeric(), targDiscrim=numeric(), thoughtNoAttCap=numeric())

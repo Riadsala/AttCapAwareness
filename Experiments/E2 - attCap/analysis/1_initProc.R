@@ -1,5 +1,6 @@
 
 library(dplyr)
+options(digits=3)
 as.numeric.factor <- function(x) {as.numeric(levels(x))[x]}
 
 ProcessASC <- function(asc)
@@ -61,9 +62,10 @@ for (e in 1:6)
 		people = c(people, paste(e, "_", p, sep=""))
 	}
 }
+# add the data from the level three students
+people = c(people, "99_1", "99_2", "99_3", "99_4", "99_5", "99_6")
 
 
-options(digits=3)
 rDat = data.frame(observer=numeric(), trial=numeric(), targLoc=numeric(), distLoc=numeric(), targDiscrim=numeric(), thoughtNoAttCap=numeric())
 fDat = data.frame(observer=numeric(), trial=numeric(), targLoc=numeric(), distLoc=numeric(), x=numeric(), y=numeric(), n=numeric())
 for (person in people)
@@ -71,10 +73,11 @@ for (person in people)
 	print(person)
 
 	dat = read.csv(paste("../data/txt_files/obs", person, ".txt", sep=""))
-	# get count of practise trial
+	# get count of practise trial and remove
 	if (person !="99_1")
 	{
 		pTrial = dat$trial[20]
+		dat = dat[21:nrow(dat),]
 	}
 	dat$observer = person
 	rDat = rbind(rDat, dat)
@@ -83,7 +86,7 @@ for (person in people)
 	asc = readLines(paste("../data//asc_files/acap", person, ".asc", sep=""))
 	asc = strsplit(asc, "\t")
 	dat = ProcessASC(asc)
-	# remove practice trials from observer 2-6
+	# remove practice trials 
 	if (person !="99_1")
 	{
 		dat$trial = dat$trial-pTrial

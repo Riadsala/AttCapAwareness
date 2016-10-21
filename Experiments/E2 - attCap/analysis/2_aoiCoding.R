@@ -46,15 +46,14 @@ for (n in 1:13)
 dC[which(dC>100^2)] = NaN
 
 # code up AOIs for fixations
+fDat$aoi = 0
+fDat$aoi2 = "blank"
 for (f in 1:nrow(fDat))
 {
-	if (sum(is.finite(dC[f,]))>0)
-	{
+	if (sum(is.finite(dC[f,]))>0) 	{
 		fDat$aoi[f] = circLabels[which(dC[f,]== min(dC[f,], na.rm=T))]
-	}
-	else
-	{
-		fDat$aoi[f] = 0
+	} else {
+		
 	}
 	# now code into centre/target/distracter/na code
 	tr = fDat$trial[f]

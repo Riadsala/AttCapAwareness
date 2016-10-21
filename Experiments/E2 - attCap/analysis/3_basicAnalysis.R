@@ -9,7 +9,7 @@ fDat$observer = factor(fDat$observer)
 rDat$observer = factor(rDat$observer)
 
 # plot basic results for distracter trials. 
-plt = ggplot(filter(rDat, distracter==1), aes(x=type, fill=thought)) + geom_bar(stat="count") + facet_grid(~observer)
+plt = ggplot(filter(rDat, distracter==1), aes(x=type, fill=thought)) + geom_bar(stat="count") + facet_wrap(~observer, nrow=2)
 plt = plt + theme_bw() + scale_y_continuous(name="number of trials") + scale_x_discrete(name=" ")
 plt = plt + theme(legend.position="top") + scale_fill_discrete(name="responded that the trial was:")
 plt = plt + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))

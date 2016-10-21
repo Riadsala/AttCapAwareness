@@ -2,6 +2,7 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(scales)
+library(lme4)
 # library(brms)
 
 fDat = read.csv("aoiFixationData.csv")
@@ -10,14 +11,51 @@ rDat = read.csv("responseCapture.csv")
 fDat$observer = as.factor(fDat$observer)
 rDat$observer = as.factor(rDat$observer)
 
+# change RT to ms
+rDat$RT = 1000 * rDat$RT
 # reorder factor levels
 rDat$congC = factor(rDat$congC, levels=levels(rDat$congC)[c(3,1,2)])	
 
+# remove incorrect trials
 source("removeBadTrials.R")
 rDat = removeBadTrials(rDat)
 
+# we're only looking at trials in which target was fixated
+rDat = filter(rDat, lookedAtTarg)
 
-# first look at no distracter, and congruency RT effects
+###############################################################
+# output data in wide format for students
+###############################################################
+adat  = (rDat
+		%>% group_by(observer, thought, congC) 
+		%>% summarise(
+			medianRT=median(RT),
+			minusDistDwell = median(RT-distDwell),
+			nTrials = length(RT)))
+# only want cells with at least 10 data points
+adat$medianRT[adat$nTrials<10] = NaN
+adat$minusDistDwell[adat$nTrials<10] = NaN
+adat$condition = paste(adat$congC, adat$thought)
+
+spss1 = spread(data=select(as.data.frame(adat), observer, condition, medianRT), condition, medianRT)
+spss2 = spread(data=select(as.data.frame(adat), observer, condition, minusDistDwell), condition, minusDistDwell)
+
+# take only trials in which observer looked at the distracter
+adat = aggregate(distDwell ~ observer + thought, filter(rDat, lookedAtDist), "median")
+spss3 = spread(data=as.data.frame(adat),  thought, distDwell)
+
+#  output SPSS data
+write.csv(spss1, "outputForSPSS1.txt", row.names=F)
+write.csv(spss2, "outputForSPSS2.txt", row.names=F)
+write.csv(spss3, "outputForSPSS3.txt", row.names=F)
+
+rm(adat)
+
+###############################################################
+# back to proper analysis now we've done SPSS output for students
+###############################################################
+
+# first look at no-distracter, and congruency RT effects
 aDat = aggregate(RT~observer+congC, rDat, "median")
 plt = ggplot(rDat, aes(x=congC, y=RT)) + geom_violin(fill="#79D0E1", draw_quantiles=c(0.25,0.5,0.75), size=0.75)
 plt = plt + geom_point(data=aDat, aes(y=RT), colour="#9A4330", size=0.5)
@@ -27,31 +65,20 @@ plt = plt + scale_y_continuous(name="reaction time (ms)")
 plt = plt + theme_bw()
 ggsave("../graphs/congC_RT.png", width=5, height=5)
 ggsave("../graphs/congC_RT.pdf", width=5, height=5)
-
-# take only trials in which observer looked at the distracter
-rDat = filter(rDat, lookedAtDist, lookedAtTarg, congC!="no distracter")
-
-# output data in wide format for students
-
-adat  = (filter(rDat, congC!="no distracter")
-		%>% group_by(observer, thought, congC) 
-		%>% summarise(
-			medianRT=median(RT),
-			minusDistDwell = median(RT-distDwell/1000),
-			nTrials = length(RT)))
-adat$medianRT[adat$nTrials<11] = NaN
-adat$minusDistDwell[adat$nTrials<11] = NaN
-adat$condition = paste(adat$congC, adat$thought)
-spss1 = spread(data=select(as.data.frame(adat), observer, condition, medianRT), condition, medianRT)
-spss2 = spread(data=select(as.data.frame(adat), observer, condition, minusDistDwell), condition, minusDistDwell)
-
-adat = aggregate(distDwell ~ observer + thought, rDat, "median")
-spss3 = spread(data=as.data.frame(adat),  thought, distDwell)
+rm(aDat)
 
 
-write.csv(spss1, "outputForSPSS1.txt", row.names=F)
-write.csv(spss2, "outputForSPSS2.txt", row.names=F)
-write.csv(spss3, "outputForSPSS3.txt", row.names=F)
+# verify there is a congruency effect
+# only look at distracter trials
+rDat = filter(rDat, distracter==1)
+m = lmer(data=rDat,RT ~ congC + (congC|observer))
+ci = confint(m, method="boot")
+# and vertify using log-transformed RT. 
+mLog = lmer(data=rDat, log(RT) ~ congC + (congC|observer))
+ci = confint(mLog, method="boot")
+
+# now take only trials with a distracer fixation
+rDat = filter(rDat, lookedAtDist)
 
 # plot distribution of distracter dwell times
 plt = ggplot(rDat , aes(x=distDwell, fill=thought)) + geom_density(alpha=0.5)
@@ -59,24 +86,14 @@ plt = plt + scale_x_continuous("log(distracter dwell time (ms))", expand=c(0,0),
 plt = plt + scale_y_continuous(expand=c(0,0.01))
 plt = plt + theme_bw() 
 plt = plt + scale_fill_brewer(palette=3, name="response", direction=-1)
- plt = plt + coord_trans(x="log2")
+plt = plt + coord_trans(x="log2")
 ggsave("../graphs/dwellTime.pdf")
 
 
-# take only relevant columns
-rDat = select(rDat, observer, congC, thought, distDwell, congC, RT)
-rDat = droplevels(rDat)
-rDat$RT = 1000 * rDat$RT
-# verify there is a congruency effect
-library(lme4)
-m = lmer(data=rDat,RT ~ congC + (congC|observer))
-ci = confint(m, method="boot")
-# and vertify using log-transformed RT. 
-mLog = lmer(data=rDat, log(RT) ~ congC + (congC|observer))
-ci = confint(mLog, method="boot")
+#  calculate aRT  (additional response time)
+rDat$aRT = rDat$RT - rDat$distDwell
 
 #  logisitic regression to predict correctly noticing Error
-rDat$aRT = rDat$RT - rDat$distDwell
 rDat$cong2 = -1
 rDat$cong2[rDat$congC=="congruent"] = 1
 m = glmer((thought=="no") ~ cong2 * scale(log(distDwell)) * scale(log(aRT)) 

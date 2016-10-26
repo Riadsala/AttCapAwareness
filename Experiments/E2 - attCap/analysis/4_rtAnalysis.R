@@ -21,7 +21,7 @@ source("removeBadTrials.R")
 rDat = removeBadTrials(rDat)
 
 # we're only looking at trials in which target was fixated
-rDat = filter(rDat, lookedAtTarg)
+rDat = filter(rDat, lookedAtTarg, finalFixOnTarg)
 
 ###############################################################
 # output data in wide format for students
@@ -93,14 +93,17 @@ ggsave("../graphs/dwellTime.pdf")
 #  calculate aRT  (additional response time)
 rDat$aRT = rDat$RT - rDat$distDwell
 
+
+rDat = droplevels(filter(rDat, aRT>0))
+
 #  logisitic regression to predict correctly noticing Error
-rDat$cong2 = -1
-rDat$cong2[rDat$congC=="congruent"] = 1
-m = glmer((thought=="no") ~ cong2 * scale(log(distDwell)) * scale(log(aRT)) 
-	+ (1|observer), 
-	data = rDat,
-	family = "binomial")
-# ci = confint(m, method="boot")
+	rDat$cong2 = -1
+	rDat$cong2[rDat$congC=="congruent"] = 1
+	m = glmer((thought=="no") ~ cong2 * scale(log(distDwell)) * scale(log(aRT)) 
+		+ (1|observer), 
+		data = rDat,
+		family = "binomial")
+ci = confint(m, method="boot")
 
 #  congruency and awareness predicint aRT
 m = lmer(aRT ~ congC * thought + (thought|observer), rDat)

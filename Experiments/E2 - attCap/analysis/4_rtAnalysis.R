@@ -11,8 +11,6 @@ rDat = read.csv("responseCapture.csv")
 fDat$observer = as.factor(fDat$observer)
 rDat$observer = as.factor(rDat$observer)
 
-# change RT to ms
-rDat$RT = 1000 * rDat$RT
 # reorder factor levels
 rDat$congC = factor(rDat$congC, levels=levels(rDat$congC)[c(3,1,2)])	
 
@@ -21,7 +19,7 @@ source("removeBadTrials.R")
 rDat = removeBadTrials(rDat)
 
 # we're only looking at trials in which target was fixated
-rDat = filter(rDat, lookedAtTarg, finalFixOnTarg)
+rDat = filter(rDat, lookedAtTarg)#, finalFixOnTarg)
 
 ###############################################################
 # output data in wide format for students

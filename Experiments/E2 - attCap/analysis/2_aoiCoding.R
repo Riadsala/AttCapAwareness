@@ -1,4 +1,4 @@
-library(ggplot2)
+slibrary(ggplot2)
 library(colorspace)
 library(dplyr)
 options(digits=3)
@@ -108,12 +108,19 @@ for (tr in 1:nrow(rDat))
 	tfDat = fDat[which(fDat$trial==rDat$trial[tr] & fDat$observer==rDat$observer[tr]),]
 	rDat$lookedAtTarg[tr] = sum(tfDat$aoi2 == "target")>0
 
+	if (rDat$lookedAtTarg[tr])
+	{
+		idx = which(tfDat$aoi2 == "target")
+		tfDat = tfDat[1:idx[1],]
+	}
 	rDat$lookedAtDist[tr] = sum(tfDat$aoi2 == "distracter")>0
 
-	if (nrow(tfDat)>0)
-	{
-		rDat$finalFixOnTarg[tr] = tfDat$aoi2[nrow(tfDat)] == "target"
-	}
+	distFix = filter(tfDat, aoi2=="distracter")
+	rDat$distDwell[tr] = sum(distFix$dur)
+	# if (nrow(tfDat)>0)
+	# {
+	# 	rDat$finalFixOnTarg[tr] = tfDat$aoi2[nrow(tfDat)] == "target"
+	# }
 }
 rDat$lookedAtTarg = as.logical(rDat$lookedAtTarg)
 rDat$lookedAtDist = as.logical(rDat$lookedAtDist)
@@ -134,15 +141,9 @@ names(rDat)[6] = "thought"
 # reorder factor levels
 rDat$congC = factor(rDat$congC, levels=levels(rDat$congC)[c(3,1,2)])	
 
-# calculate dwell time
-for (ii in 1:nrow(rDat))
-{
-	tr = rDat$trial[ii]
-	ob = rDat$observer[ii]
-	trialFix = filter(fDat, observer==ob, trial==tr)
-	distFix = filter(trialFix, aoi2=="distracter")
-	rDat$distDwell[ii] = sum(distFix$dur)
-}
+
+
+rDat$RT = 1000 * rDat$RT
 
 write.csv(fDat, "aoiFixationData.csv", row.names=FALSE)
 write.csv(rDat, "responseCapture.csv", row.names=FALSE)

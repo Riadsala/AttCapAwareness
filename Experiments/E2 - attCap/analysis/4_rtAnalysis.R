@@ -1,6 +1,6 @@
 library(ggplot2)
 library(dplyr)
-library(tidyr)
+# library(tidyr)
 library(scales)
 library(lme4)
 # library(brms)
@@ -18,37 +18,6 @@ rDat$congC = factor(rDat$congC, levels=levels(rDat$congC)[c(3,1,2)])
 source("removeBadTrials.R")
 rDat = removeBadTrials(rDat)
 
-# we're only looking at trials in which target was fixated
-rDat = filter(rDat, lookedAtTarg)#, finalFixOnTarg)
-
-###############################################################
-# output data in wide format for students
-###############################################################
-adat  = (rDat
-		%>% group_by(observer, thought, congC) 
-		%>% summarise(
-			medianRT=median(RT),
-			minusDistDwell = median(RT-distDwell),
-			nTrials = length(RT)))
-# only want cells with at least 10 data points
-adat$medianRT[adat$nTrials<10] = NaN
-adat$minusDistDwell[adat$nTrials<10] = NaN
-adat$condition = paste(adat$congC, adat$thought)
-
-spss1 = spread(data=select(as.data.frame(adat), observer, condition, medianRT), condition, medianRT)
-spss2 = spread(data=select(as.data.frame(adat), observer, condition, minusDistDwell), condition, minusDistDwell)
-
-# take only trials in which observer looked at the distracter
-adat = aggregate(distDwell ~ observer + thought, filter(rDat, lookedAtDist), "median")
-spss3 = spread(data=as.data.frame(adat),  thought, distDwell)
-
-#  output SPSS data
-write.csv(spss1, "outputForSPSS1.txt", row.names=F)
-write.csv(spss2, "outputForSPSS2.txt", row.names=F)
-write.csv(spss3, "outputForSPSS3.txt", row.names=F)
-
-rm(adat)
-
 ###############################################################
 # back to proper analysis now we've done SPSS output for students
 ###############################################################
@@ -65,10 +34,10 @@ ggsave("../graphs/congC_RT.png", width=5, height=5)
 ggsave("../graphs/congC_RT.pdf", width=5, height=5)
 rm(aDat)
 
-
 # verify there is a congruency effect
 # only look at distracter trials
 rDat = filter(rDat, distracter==1)
+
 m = lmer(data=rDat,RT ~ congC + (congC|observer))
 ci = confint(m, method="boot")
 # and vertify using log-transformed RT. 
@@ -95,12 +64,12 @@ rDat$aRT = rDat$RT - rDat$distDwell
 rDat = droplevels(filter(rDat, aRT>0))
 
 #  logisitic regression to predict correctly noticing Error
-	rDat$cong2 = -1
-	rDat$cong2[rDat$congC=="congruent"] = 1
-	m = glmer((thought=="no") ~ cong2 * scale(log(distDwell)) * scale(log(aRT)) 
-		+ (1|observer), 
-		data = rDat,
-		family = "binomial")
+rDat$cong2 = -1
+rDat$cong2[rDat$congC=="congruent"] = 1
+m = glmer((thought=="no") ~ cong2 * scale(log(distDwell)) * scale(log(aRT)) 
+	+ (1|observer), 
+	data = rDat,
+	family = "binomial")
 ci = confint(m, method="boot")
 
 #  congruency and awareness predicint aRT

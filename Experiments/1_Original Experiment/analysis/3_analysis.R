@@ -140,7 +140,10 @@ dat$type[as.logical(dat$lengthOK) & (dat$lookedAtTarg==TRUE)] = "direct"
 dat$type = as.factor(dat$type)
 
 dat$thoughtNoAttCap = as.factor(dat$thoughtNoAttCap)
-levels(dat$thoughtNoAttCap) = c("bad", "good")
+levels(dat$thoughtNoAttCap) = c("no", "yes")
+dat$thoughtNoAttCap = factor(dat$thoughtNoAttCap, levels(dat$thoughtNoAttCap)[c(2,1)])
+# reorder factor level
+ # dat$thoughtNoAttCap= factor(dat$thoughtNoAttCap,levels(dat$thoughtNoAttCap)[c()])
 levels(dat$observer) = c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "A", "B")
 
 # plot basic results for distracter trials. 
@@ -148,9 +151,9 @@ dat = filter(dat, distracter==1)
 
 plt = ggplot(dat, aes(x=type, fill=thoughtNoAttCap)) + geom_bar(stat="count") + facet_grid(~observer)
 plt = plt + theme_bw() + scale_y_continuous(name="number of trials") + scale_x_discrete(name=" ")
-plt = plt + theme(legend.position="top") + scale_fill_discrete(name="responded that the trial was:")
+plt = plt + theme(legend.position="top") 
 plt = plt + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
-plt = plt + scale_fill_brewer(type="seq", palette=3, name="response", direction=-1)
+plt = plt + scale_fill_brewer(type="seq", palette=3, name="response:", direction=1)
 ggsave("../graphs/capturedAndThoughtA.pdf", width=10, height=4)
 ggsave("../graphs/capturedAndThoughtA.png", width=10, height=4)
 

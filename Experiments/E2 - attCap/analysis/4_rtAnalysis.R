@@ -48,11 +48,12 @@ ci = confint(mLog, method="boot")
 rDat = filter(rDat, lookedAtDist)
 
 # plot distribution of distracter dwell times
+levels(rDat$thought) = c("captured", "direct")
 plt = ggplot(rDat , aes(x=distDwell, fill=thought)) + geom_density(alpha=0.5)
 plt = plt + scale_x_continuous("log(distracter dwell time (ms))", expand=c(0,0), trans=log2_trans(), breaks=c(12.5, 25, 50,100, 150, 200, 300,400, 500))
 plt = plt + scale_y_continuous(expand=c(0,0.01))
 plt = plt + theme_bw() 
-plt = plt + scale_fill_brewer(palette=3, name="response", direction=-1)
+# plt = plt + scale_fill_brewer(name="response", direction=-1)
 plt = plt + coord_trans(x="log2")
 ggsave("../graphs/dwellTime.pdf")
 

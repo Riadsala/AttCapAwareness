@@ -29,7 +29,7 @@ for (person in levels(rDat$observer))
 	
 	dat_pr = rbind(dat_pr, data.frame(person=person, stat="precision", val=prec))
 	dat_pr = rbind(dat_pr, data.frame(person=person, stat="recall", val=recall))
-	dat_pr = rbind(dat_pr, data.frame(person=person, stat="F1", val=2*prec*recall/(prec+recall)))
+	# dat_pr = rbind(dat_pr, data.frame(person=person, stat="F1", val=2*prec*recall/(prec+recall)))
 	dat_pr= rbind(dat_pr, data.frame(person=person, stat="accuracy", val=acc))
 }
 

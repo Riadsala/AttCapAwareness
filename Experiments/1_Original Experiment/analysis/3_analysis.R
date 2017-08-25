@@ -164,13 +164,13 @@ dat_error_recall =data.frame(person=character(), errorRate=numeric(), recall=num
 for (person in levels(dat$observer))
 {
 	pdat = dat[which(dat$observer==person),]
-	prec = sum(pdat$type=="error" & pdat$thoughtNoAttCap=="bad")/sum(pdat$thoughtNoAttCap=="bad")
-	recall = sum(pdat$type=="error" & pdat$thoughtNoAttCap=="bad")/sum(pdat$type=="error")
+	prec = sum(pdat$type=="error" & pdat$thoughtNoAttCap=="no")/sum(pdat$thoughtNoAttCap=="no")
+	recall = sum(pdat$type=="error" & pdat$thoughtNoAttCap=="no")/sum(pdat$type=="error")
 	acc = mean((pdat$type=="error") == (pdat$thoughtNoAttCap==FALSE))
 	
 	dat_pr = rbind(dat_pr, data.frame(person=person, stat="precision", val=prec))
 	dat_pr = rbind(dat_pr, data.frame(person=person, stat="recall", val=recall))
-	dat_pr = rbind(dat_pr, data.frame(person=person, stat="F1", val=2*prec*recall/(prec+recall)))
+	# dat_pr = rbind(dat_pr, data.frame(person=person, stat="F1", val=2*prec*recall/(prec+recall)))
 	dat_pr= rbind(dat_pr, data.frame(person=person, stat="accuracy", val=acc))
 
 	dat_error_recall = rbind(dat_error_recall, data.frame(person=person, errorRate = mean(filter(pdat, distracter==1)$type=="error"), recall=recall))

@@ -17,6 +17,8 @@ ProcessASC <- function(asc)
 		trial = asc[trialStarts[t]:trialEnds[t]]
 		fixationLines = grep("EFIX", trial)
 		
+		t0 = as.numeric(unlist(strsplit(asc[trialStarts[tr]][[1]][2], split = " "))[1])
+
 		if (length(fixationLines)>0)
 		{
 			fixations = as.data.frame(matrix(unlist(trial[fixationLines]), byrow=T, ncol=6))

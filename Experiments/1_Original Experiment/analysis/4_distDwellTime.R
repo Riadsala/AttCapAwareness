@@ -1,28 +1,32 @@
 library(ggplot2)
-library(dplyr)
+library(tidyverse)
+library(scales)
+rDatA = read.csv("../authorsData/responses.csv")
+rDatA$observer = factor(rDatA$observer, labels=c('A', 'B'))
+rDatA$observer = as.character(rDatA$observer)
 
 
+# fDat = read.csv("aoiFixationData.csv")
+# rDat = read.csv("responses.csv")
+rDatB = read.csv("responses.csv")
+rDat = rbind(rDatA, rDatB)
 
 rDat$thought = as.factor(rDat$thoughtNoAttCap)
 levels(rDat$thought) = c("captured", "direct")
-# fDat = read.csv("aoiFixationData.csv")
-# rDat = read.csv("responses.csv")
+rDat$lookedAtTarg = FALSE
+rDat$lookedAtDist = FALSE
 
 
-# rDat$lookedAtTarg = FALSE
-# rDat$lookedAtDist = FALSE
+# determine if trial included fixation to target or distracter
+for (tr in 1:nrow(rDat))
+{
+	tfDat = fDat[which(fDat$trial==rDat$trial[tr] & fDat$observer==rDat$observer[tr]),]
+	rDat$lookedAtTarg[tr] = sum(tfDat$aoi2 == "target")>0
+	rDat$lookedAtDist[tr] = sum(tfDat$aoi2 == "distracter")>0
+}
 
-
-# # determine if trial included fixation to target or distracter
-# for (tr in 1:nrow(rDat))
-# {
-# 	tfDat = fDat[which(fDat$trial==rDat$trial[tr] & fDat$observer==rDat$observer[tr]),]
-# 	rDat$lookedAtTarg[tr] = sum(tfDat$aoi2 == "target")>0
-# 	rDat$lookedAtDist[tr] = sum(tfDat$aoi2 == "distracter")>0
-# }
-
-# rDat$lookedAtTarg = as.logical(rDat$lookedAtTarg)
-# rDat$lookedAtDist = as.logical(rDat$lookedAtDist)
+rDat$lookedAtTarg = as.logical(rDat$lookedAtTarg)
+rDat$lookedAtDist = as.logical(rDat$lookedAtDist)
 
 
 rDist = filter(rDat, lookedAtDist==TRUE)
@@ -46,10 +50,13 @@ adat  = (rDist
 
 # write.csv( adat, "distracterDwellTimes.txt", row.names=FALSE)
 
-plt = ggplot(rDist , aes(x=distDwell, fill=thought)) + geom_density(alpha=0.5)
+plt = ggplot(rDist , aes(x=distDwell, fill=thought))
+plt <- plt + geom_density(alpha=0.5)
 plt = plt + scale_x_continuous("distracter dwell time (ms)", expand=c(0,0), trans=log2_trans(), breaks=c(12.5, 25, 50,100, 150, 200, 300,400, 500))
  plt = plt + coord_trans(x="log2")
+ plt <- plt + scale_fill_manual(values=c("grey50", "grey15"))
 # plt = plt + scale_y_continuous(expand=c(0,0.01))
 plt = plt + theme_bw() + theme(legend.justification=c(1,1), legend.position=c(1,1))
 plt
-ggsave("../graphs/dwellTime.pdf")
+ggsave("../graphs/dwellTime.pdf", width = 6, height = 4)
+ggsave("../graphs/dwellTime.png", width = 6, height = 4)

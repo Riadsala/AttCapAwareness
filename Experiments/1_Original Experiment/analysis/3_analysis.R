@@ -96,6 +96,7 @@ for (tr in 1:nrow(rDat))
 	tfDat = fDat[which(fDat$trial==rDat$trial[tr] & fDat$observer==rDat$observer[tr]),]
 	rDat$lookedAtTarg[tr] = sum(tfDat$aoi2 == "target")>0
 	rDat$lookedAtDist[tr] = sum(tfDat$aoi2 == "distracter")>0
+	rDat$latToTarg[tr] = min(filter(trDat, aoi2 = target)$)
 }
 
 rDat$lookedAtTarg = as.logical(rDat$lookedAtTarg)

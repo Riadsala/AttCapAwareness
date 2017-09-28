@@ -1,5 +1,5 @@
-library(ggplot2)
-library(dplyr)
+library(tidyverse)
+
 options(digits=3)
 fDat = read.csv("fixations.csv")
 rDat = read.csv("responses.csv")
@@ -24,8 +24,6 @@ circLabels=cbind(circLabels, 'c')
 # first, transform (x,y) to stimuli coordinates
 fDat$x = fDat$x - (1920-1024)/2 - 512
 fDat$y = - (fDat$y - (1080-1024)/2 - 512)
-
-# ggplot(fDat, aes(x=x, y=y,colour=trial)) + geom_path()
 
 dC = array(0, c(nrow(fDat),13))
 
@@ -94,3 +92,17 @@ rDat$lookedAtDist = as.factor(rDat$lookedAtDist)
 # 	ggsave(paste("trial", tr, ".png", sep=""))
 
 # }
+
+
+#  classify trials based on path length
+rDat$type = 'error'
+rDat$type[as.logical(rDat$lengthOK) & (rDat$lookedAtTarg==TRUE)] = "direct"
+# rDat$type[rDat$pathLength>1.2] = "tooLong"
+# rDat$type[rDat$lookedAtDist==TRUE] = "fixatedDistracter"
+
+rDat$type = as.factor(rDat$type)
+
+
+
+write.csv(rDat, "responses2.csv")
+write.csv(fDat, "fixations2.csv")

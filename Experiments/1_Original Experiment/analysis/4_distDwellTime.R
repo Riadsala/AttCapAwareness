@@ -1,6 +1,6 @@
-library(ggplot2)
 library(tidyverse)
 library(scales)
+
 rDatA = read.csv("../authorsData/responses.csv")
 rDatA$observer = factor(rDatA$observer, labels=c('A', 'B'))
 rDatA$observer = as.character(rDatA$observer)
@@ -29,7 +29,9 @@ rDat$lookedAtTarg = as.logical(rDat$lookedAtTarg)
 rDat$lookedAtDist = as.logical(rDat$lookedAtDist)
 
 
-rDist = filter(rDat, lookedAtDist==TRUE)
+# rDist = filter(rDat, lookedAtDist==TRUE)
+
+
 
 for (ii in 1:nrow(rDist))
 {
@@ -38,6 +40,9 @@ for (ii in 1:nrow(rDist))
 	trialFix = filter(fDat, observer==ob, trial==tr)
 	distFix = filter(trialFix, aoi2=="distracter")
 	rDist$distDwell[ii] = sum(distFix$dur)
+	first_fix <- filter(trialFix, n == 1)
+	rDist$initLat[ii] <- first_fix$dur + first_fix$onset
+	rDist$initDur[ii] <- first_fix$onset
 }
 
 
@@ -60,3 +65,15 @@ plt = plt + theme_bw() + theme(legend.justification=c(1,1), legend.position=c(1,
 plt
 ggsave("../graphs/dwellTime.pdf", width = 6, height = 4)
 ggsave("../graphs/dwellTime.png", width = 6, height = 4)
+
+# look at latency
+rDist <- filter(rDist, initLat < 500)
+plt = ggplot(rDist, aes(x=initLat, fill=lookedAtDist))
+plt <- plt + geom_density(alpha=0.5)
+plt = plt + scale_x_continuous("initial latency (ms)", expand=c(0,0))
+ # plt = plt + coord_trans(x="log2")
+ plt <- plt + scale_fill_manual(values=c("blue", "grey15"))
+# plt = plt + scale_y_continuous(expand=c(0,0.01))
+plt = plt + theme_bw() + theme(legend.justification=c(1,1), legend.position=c(1,1))
+plt
+

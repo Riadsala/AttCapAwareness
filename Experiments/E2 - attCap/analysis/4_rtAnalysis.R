@@ -38,25 +38,26 @@ rm(aDat)
 # only look at distracter trials
 rDat = filter(rDat, distracter==1)
 
-m = lmer(data=rDat,RT ~ congC + (congC|observer))
-ci = confint(m, method="boot")
-# and vertify using log-transformed RT. 
-mLog = lmer(data=rDat, log(RT) ~ congC + (congC|observer))
-ci = confint(mLog, method="boot")
+# m = lmer(data=rDat,RT ~ congC + (congC|observer))
+# ci = confint(m, method="boot")
+# # and vertify using log-transformed RT. 
+# mLog = lmer(data=rDat, log(RT) ~ congC + (congC|observer))
+# ci = confint(mLog, method="boot")
 
 # now take only trials with a distracer fixation
 rDat = filter(rDat, lookedAtDist)
 
 # plot distribution of distracter dwell times
-levels(rDat$thought) = c("captured", "direct")
+levels(rDat$thought) = c("error", "direct")
 plt = ggplot(rDat , aes(x=distDwell, fill=thought)) + geom_density(alpha=0.5)
 plt = plt + scale_x_continuous("log(distracter dwell time (ms))", expand=c(0,0), trans=log2_trans(), breaks=c(12.5, 25, 50,100, 150, 200, 300,400, 500))
 plt = plt + scale_y_continuous(expand=c(0,0.01))
 plt = plt + theme_bw() 
+ plt <- plt + scale_fill_manual(values=c("grey50", "grey15"))
 # plt = plt + scale_fill_brewer(name="response", direction=-1)
 plt = plt + coord_trans(x="log2")
 ggsave("../graphs/dwellTime.pdf")
-
+ggsave("../graphs/dwellTime.png")
 
 #  calculate aRT  (additional response time)
 rDat$aRT = rDat$RT - rDat$distDwell

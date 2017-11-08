@@ -1,18 +1,11 @@
 library(tidyverse)
 library(scales)
 
-rDatA = read.csv("../authorsData/responses.csv")
-rDatA$observer = factor(rDatA$observer, labels=c('A', 'B'))
-rDatA$observer = as.character(rDatA$observer)
 
-
-# fDat = read.csv("aoiFixationData.csv")
-# rDat = read.csv("responses.csv")
-rDatB = read.csv("responses.csv")
-rDat = rbind(rDatA, rDatB)
+rDat = read.csv("responses.csv")
 
 rDat$thought = as.factor(rDat$thoughtNoAttCap)
-levels(rDat$thought) = c("captured", "direct")
+levels(rDat$thought) = c("error", "direct")
 rDat$lookedAtTarg = FALSE
 rDat$lookedAtDist = FALSE
 
@@ -29,9 +22,7 @@ rDat$lookedAtTarg = as.logical(rDat$lookedAtTarg)
 rDat$lookedAtDist = as.logical(rDat$lookedAtDist)
 
 
-# rDist = filter(rDat, lookedAtDist==TRUE)
-
-
+rDist = filter(rDat, lookedAtDist==TRUE)
 
 for (ii in 1:nrow(rDist))
 {

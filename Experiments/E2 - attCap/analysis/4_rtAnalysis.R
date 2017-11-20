@@ -30,6 +30,7 @@ plt = plt + geom_path(data=aDat, aes(x=congC, y=RT, group=observer), colour="#9A
 plt = plt + scale_x_discrete(name="distracter congruency")
 plt = plt + scale_y_continuous(name="reaction time (ms)")
 plt = plt + theme_bw()
+
 ggsave("../graphs/congC_RT.png", width=5, height=5)
 ggsave("../graphs/congC_RT.pdf", width=5, height=5)
 rm(aDat)
@@ -52,12 +53,12 @@ levels(rDat$thought) = c("error", "direct")
 plt = ggplot(rDat , aes(x=distDwell, fill=thought)) + geom_density(alpha=0.5)
 plt = plt + scale_x_continuous("log(distracter dwell time (ms))", expand=c(0,0), trans=log2_trans(), breaks=c(12.5, 25, 50,100, 150, 200, 300,400, 500))
 plt = plt + scale_y_continuous(expand=c(0,0.01))
-plt = plt + theme_bw() 
+plt = plt + theme_bw() + theme(legend.justification=c(1,1), legend.position=c(1,1))
  plt <- plt + scale_fill_manual(values=c("grey50", "grey15"))
 # plt = plt + scale_fill_brewer(name="response", direction=-1)
 plt = plt + coord_trans(x="log2")
-ggsave("../graphs/dwellTime.pdf")
-ggsave("../graphs/dwellTime.png")
+ggsave("../graphs/dwellTime.pdf" ,width = 6, height = 4)
+ggsave("../graphs/dwellTime.png", width = 6, height = 4)
 
 #  calculate aRT  (additional response time)
 rDat$aRT = rDat$RT - rDat$distDwell

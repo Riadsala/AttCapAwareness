@@ -9,6 +9,7 @@ levels(rDat$thought) = c("error", "direct")
 rDat$lookedAtTarg = FALSE
 rDat$lookedAtDist = FALSE
 
+fDat <- as.tibble(read.csv("fixations2.csv"))
 
 # determine if trial included fixation to target or distracter
 for (tr in 1:nrow(rDat))
@@ -33,7 +34,7 @@ for (ii in 1:nrow(rDist))
 	rDist$distDwell[ii] = sum(distFix$dur)
 	first_fix <- filter(trialFix, n == 1)
 	rDist$initLat[ii] <- first_fix$dur + first_fix$onset
-	rDist$initDur[ii] <- first_fix$onset
+	# rDist$initDur[ii] <- first_fix$onset
 }
 
 
@@ -57,14 +58,5 @@ plt
 ggsave("../graphs/dwellTime.pdf", width = 6, height = 4)
 ggsave("../graphs/dwellTime.png", width = 6, height = 4)
 
-# look at latency
-rDist <- filter(rDist, initLat < 500)
-plt = ggplot(rDist, aes(x=initLat, fill=lookedAtDist))
-plt <- plt + geom_density(alpha=0.5)
-plt = plt + scale_x_continuous("initial latency (ms)", expand=c(0,0))
- # plt = plt + coord_trans(x="log2")
- plt <- plt + scale_fill_manual(values=c("blue", "grey15"))
-# plt = plt + scale_y_continuous(expand=c(0,0.01))
-plt = plt + theme_bw() + theme(legend.justification=c(1,1), legend.position=c(1,1))
-plt
+
 

@@ -47,8 +47,10 @@ for (person in levels(rDat$observer))
 dat_pr$stat = factor(dat_pr$stat, levels=c('accuracy', 'precision', 'recall', "F1"))
 
 
-plt = ggplot(dat_pr, aes(x=stat, y=val)) + geom_boxplot(fill="grey")
-plt = plt + theme_bw() + theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position="none")
+plt = ggplot(dat_pr, aes(x=stat, y=val)) + 
+geom_boxplot(fill="grey")
+plt = plt + theme_bw() + theme(axis.title.x = element_blank(), legend.position="none")
+plt = plt + scale_y_continuous(name = "proportion")
 ggsave("../graphs/f1score.pdf", height=5, width=5)
 ggsave("../graphs/f1score.png", height=5, width=5)
 

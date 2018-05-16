@@ -1,5 +1,5 @@
 library(ggplot2)
-library(dplyr)
+library(tidyverse)
 library(colorspace)
 options(digits=3)
 
@@ -78,9 +78,9 @@ dat_pr$stat = factor(dat_pr$stat, levels=c('accuracy', 'precision', 'recall', "F
 dat_pr$dist = as.factor(dat_pr$dist)
 
 plt = ggplot(dat_pr, aes(x=stat, y=val, fill = dist)) + geom_boxplot()
-plt = plt + theme_bw() + theme(axis.title.x = element_blank(), axis.title.y = element_blank(), 
+plt = plt + theme_bw() + theme(axis.title.x = element_blank(), 
 	legend.position="top")
-# plt = plt + scale_fill_discrete("distance")
+plt = plt + scale_y_continuous(name = "proportion")
 plt = plt + scale_fill_brewer(name = "distance", 
 	labels = c(
 		expression(paste("30",degree, sep="")),

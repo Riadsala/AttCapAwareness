@@ -1,6 +1,6 @@
-slibrary(ggplot2)
+library(tidyverse)
 library(colorspace)
-library(dplyr)
+
 options(digits=3)
 
 fDat = read.csv("fixations.csv")

@@ -76,8 +76,15 @@ for (person in levels(dat$observer))
 dat_pr$stat = factor(dat_pr$stat, levels=c('accuracy', 'precision', 'recall', "F1"))
 
 dat_pr$dist = as.factor(dat_pr$dist)
+
 plt = ggplot(dat_pr, aes(x=stat, y=val, fill = dist)) + geom_boxplot()
-plt = plt + theme_bw() + theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position="top")
-plt = plt + scale_fill_brewer()
+plt = plt + theme_bw() + theme(axis.title.x = element_blank(), axis.title.y = element_blank(), 
+	legend.position="top")
+# plt = plt + scale_fill_discrete("distance")
+plt = plt + scale_fill_brewer(name = "distance", 
+	labels = c(
+		expression(paste("30",degree, sep="")),
+		expression(paste("90",degree, sep="")),
+		expression(paste("150",degree, sep=""))))
 ggsave("../graphs/f1score2.pdf", height=5, width=5)
 ggsave("../graphs/f1score2.png", height=5, width=5)

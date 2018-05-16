@@ -19,6 +19,47 @@ source("removeBadTrials.R")
 rDat = removeBadTrials(rDat)
 
 ###############################################################
+# get saccade latencies
+###############################################################
+
+for (ii in 1:nrow(rDat))
+{
+	tr = rDat$trial[ii]
+	ob = rDat$observer[ii]
+	trialFix = filter(fDat, observer==ob, trial==tr)
+	distFix = filter(trialFix, aoi2=="distracter")
+	rDat$distDwell[ii] = sum(distFix$dur)
+	first_fix <- filter(trialFix, n == 1)
+	if (is.na(first_fix$onset) || (nrow(first_fix ) == 0)) {
+		rDat$initLat[ii] = NA
+	} else if (first_fix$onset < 0) {
+		rDat$initLat[ii] <- first_fix$dur + first_fix$onset
+	} else {
+		rDat$initLat[ii] <- first_fix$dur
+
+	}
+}
+
+
+mean(filter(rDat, distracter == 1, lengthOK == 1, lookedAtDist == FALSE)$initLat, na.rm=T)
+mean(filter(rDat, distracter == 1, lengthOK == 0, lookedAtDist == TRUE)$initLat, na.rm=T)
+mean(filter(rDat, distracter == 1, lengthOK == 0, lookedAtDist == FALSE)$initLat, na.rm=T)
+
+
+sd(filter(rDat, distracter == 1, lengthOK == 1, lookedAtDist == FALSE)$initLat, na.rm=T)
+sd(filter(rDat, distracter == 1, lengthOK == 0, lookedAtDist == TRUE)$initLat, na.rm=T)
+sd(filter(rDat, distracter == 1, lengthOK == 0, lookedAtDist == FALSE)$initLat, na.rm=T)
+
+mean(filter(rDat, distracter == 0, lengthOK == 1)$initLat, na.rm=T)
+mean(filter(rDat, distracter == 0, lengthOK == 0)$initLat, na.rm=T)
+
+
+sd(filter(rDat, distracter == 0, lengthOK == 1)$initLat, na.rm=T)
+sd(filter(rDat, distracter == 0, lengthOK == 0)$initLat, na.rm=T)
+
+
+
+###############################################################
 # back to proper analysis now we've done SPSS output for students
 ###############################################################
 

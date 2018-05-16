@@ -45,7 +45,13 @@ for (ii in 1:nrow(rDat))
 }
 
 # get mean sacc lat for conditions
-rDat = filter(rDat, lookedAtTarg == TRUE)
+# rDat = filter(rDat, lookedAtTarg == TRUE, lookedAtDist == TRUE)
+
+
+library(lme4)
+
+m <- glmer(thought ~ scale(initLat) * scale(distDwell) + (1|observer), data = rDat, family = "binomial")
+
 mean(filter(rDat, distracter == 1, lengthOK == 1, lookedAtDist == FALSE)$initLat, na.rm=T)
 mean(filter(rDat, distracter == 1, lengthOK == 0, lookedAtDist == TRUE)$initLat, na.rm=T)
 mean(filter(rDat, distracter == 1, lengthOK == 0, lookedAtDist == FALSE)$initLat, na.rm=T)

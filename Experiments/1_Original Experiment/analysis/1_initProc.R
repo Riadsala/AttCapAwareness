@@ -1,54 +1,11 @@
+
+library(dplyr)
+options(digits=3)
 as.numeric.factor <- function(x) {as.numeric(levels(x))[x]}
-
-
-
-ProcessASC <- function(asc)
-{
-
-	fixDat =  data.frame(observer=numeric(), trial=numeric(), n=numeric(), x=numeric(), y=numeric(), dur=numeric())
-
-
-	trialStarts = grep("TRIAL_START[0-9]*", asc)
-	trialEnds   = grep("TRIAL_END[0-9]*", asc)
-	nTrials = length(trialStarts)
-
-	for (t in 1:nTrials)
-	{
-		trial = asc[trialStarts[t]:trialEnds[t]]
-		fixationLines = grep("EFIX", trial)
-
-		# compute t0 = stimulus onset
-		stimOnset = grep("STIM_ON", trial)
-		t0 = as.numeric(unlist(strsplit(unlist(trial[2])[2], " "))[1])
-
-		if (length(fixationLines)>0)
-		{
-			fixations = as.data.frame(matrix(unlist(trial[fixationLines]), byrow=T, ncol=6))
-
-			trialDat = data.frame(
-				observer = person, 
-				trial = t, 
-				onset = as.numeric(unlist(regmatches(fixations$V1, gregexpr("[0-9]+", fixations$V1)))) - t0,
-
-				x = as.numeric.factor(fixations$V4), 
-				y = as.numeric.factor(fixations$V5), 
-				dur = as.numeric.factor(fixations$V3))
-
-			# convert to stimulus coordinates
-			 		
-			 trialDat$n = 1:length(trialDat$x)
-		
-			 fixDat = rbind(fixDat, trialDat)
-			 #rm(trialDat)
-
-		}
-	}
-
-	return(fixDat)
-} 
+source("../../ProcessASC.R")
 
 people = c(19,20,21,22,23,25,26,27,30, 34)
-options(digits=3)
+
 rDat = data.frame(observer=numeric(), trial=numeric(), targLoc=numeric(), distLoc=numeric(), targDiscrim=numeric(), thoughtNoAttCap=numeric())
 fDat = data.frame(observer=numeric(), trial=numeric(), targLoc=numeric(), distLoc=numeric(), onset=numeric(), x=numeric(), y=numeric(), n=numeric())
 for (person in people)

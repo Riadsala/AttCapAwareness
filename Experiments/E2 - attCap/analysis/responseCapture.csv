@@ -1,5 +1,5 @@
 "observer","trial","targLoc","distLoc","targDiscrim","thought","tc","dc","RT","TrialTypeRT","distracter","distLocRel","pathLength","nFix","congC","distLocO","lookedAtTarg","lookedAtDist","distDwell","lengthOK","type"
-"1_1",2,2,2,1,"no",-1,-1,675.778,3.341312,1,0,13.6928775604561,22,"congruent",1,TRUE,FALSE,0,"FALSE","error"
+"1_1",2,2,2,1,"no",-1,-1,675.778,3.341312,1,0,27.3857551209122,22,"congruent",1,TRUE,FALSE,0,"FALSE","error"
 "1_1",3,3,5,1,"no",-1,-1,763.293,1.539311,1,1,12.0637557564568,18,"congruent",3,TRUE,FALSE,0,"FALSE","error"
 "1_1",4,6,5,1,"no",-1,-1,937.485,3.437223,1,1,NA,0,"congruent",6,FALSE,FALSE,0,NA,"error"
 "1_1",5,5,NA,1,"yes",-1,0,573.783,0.890652,0,0,9.76687179044143,21,"no distracter",0,TRUE,FALSE,0,"FALSE","error"

@@ -95,9 +95,8 @@ for (tr in 1:nrow(rDat))
 			rDat$pathLength[tr] = rDat$pathLength[tr] + amp
 		}
 		rm(amp)
-	}
-	else
-	{
+	} else 	{
+			
 		rDat$pathLength[tr] = NaN
 	}
 }
